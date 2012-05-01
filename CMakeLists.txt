@@ -23,8 +23,12 @@ find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(LIBSBCP libsbcp-0 REQUIRED)
 pkg_check_modules(BIOROB_RBIO biorob-rbio-0 REQUIRED)
+pkg_check_modules(LIBONCILLA liboncilla-0 REQUIRED)
 
-include_directories(${LIBSBCP_INCLUDE_DIRS} ${BIOROB_RBIO_INCLUDE_DIRS})
+include_directories(${LIBSBCP_INCLUDE_DIRS} ${BIOROB_RBIO_INCLUDE_DIRS}
+${LIBONCILLA_INCLUDE_DIRS})
+
+set(INCLUDE_DIR include/liboncilla-hw-${API_VERSION})
 
 add_subdirectory(src)
 
