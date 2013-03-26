@@ -1,16 +1,16 @@
 #pragma once
 
-#include <liboncilla/nodes/L1L2.h>
+#include <liboncilla/nodes/L1L2L2.h>
 
 namespace liboncilla {
 namespace hw {
 
 using namespace rci;
 
-class L1: public rci::oncilla::L1 {
+class L1L2: public rci::oncilla::L1L2 {
 public:
-    L1(rci::oncilla::Synchronizer & s, const std::string & name);
-    virtual ~L1();
+    L1L2(rci::oncilla::Synchronizer & s, const std::string & name);
+    virtual ~L1L2();
 
     virtual void setControlMode(ControlModePtr controlMode);
 
