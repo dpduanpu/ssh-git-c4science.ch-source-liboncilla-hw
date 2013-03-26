@@ -1,8 +1,7 @@
 set(SRC_FILES HWOncillaBackend.cpp
               nodes/Trunk.cpp
               nodes/L0.cpp
-              nodes/L1.cpp
-              nodes/L2.cpp
+              nodes/L1L2.cpp
               nodes/L3.cpp
               nodes/SupervisorL4.cpp
               nodes/SupervisorTrunk.cpp
@@ -14,8 +13,7 @@ set(HDR_FILES HWOncillaBackend.h
               nodes/Nodes.h
               nodes/Trunk.h
               nodes/L0.h
-              nodes/L1.h
-              nodes/L2.h
+              nodes/L1L2.h
               nodes/L3.h
               nodes/SupervisorL4.h
               nodes/SupervisorTrunk.h
