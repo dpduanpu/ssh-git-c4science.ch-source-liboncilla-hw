@@ -9,7 +9,8 @@ set(SRC_FILES HWOncillaBackend.cpp
               nodes/DeepCopyable.cpp
               adapters/rx-io.cpp
               adapters/BrushlessMotorPosition.cpp
-			  adapters/Servo.cpp)
+			  adapters/Servo.cpp
+			  adapters/MagneticEncoder.cpp)
 
 set(HDR_FILES HWOncillaBackend.h
               Common.h
@@ -25,7 +26,8 @@ set(HDR_FILES HWOncillaBackend.h
               adapters/rx-io.h
               adapters/Adapters.h
               adapters/BrushlessMotorPosition.h
-			  adapters/Servo.h)
+			  adapters/Servo.h
+			  adapters/MagneticEncoder.h)
 
 add_library(oncilla-hw MODULE ${SRC_FILES} ${HDR_FILES})
 
