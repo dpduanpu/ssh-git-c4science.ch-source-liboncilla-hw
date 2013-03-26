@@ -3,28 +3,30 @@
 namespace liboncilla {
 namespace hw {
 
+std::set<DeepCopyable*> DeepCopyable::s_changedDeepCopyables;
+
 DeepCopyable::DeepCopyable() {
 }
 
 DeepCopyable::~DeepCopyable() {
     // Remove myself from the set before destruction
-    ChangedDeepCopyables.erase(this);
+    s_changedDeepCopyables.erase(this);
 }
 
 void DeepCopyable::mark() {
     // Add myself to the set
-    ChangedDeepCopyables.insert(this);
+    s_changedDeepCopyables.insert(this);
 }
 
-void makeDeepCopies() {
-    for (std::set<DeepCopyable*>::iterator i = ChangedDeepCopyables.begin();
-            i != ChangedDeepCopyables.end(); ++i) {
+void DeepCopyable::makeDeepCopies() {
+    for (std::set<DeepCopyable*>::iterator i = s_changedDeepCopyables.begin();
+            i != s_changedDeepCopyables.end(); ++i) {
         (*i)->deepCopyResources();
     }
 }
 
-void clearMark() {
-    ChangedDeepCopyables.clear();
+void DeepCopyable::clearMarks() {
+    s_changedDeepCopyables.clear();
 }
 
 }

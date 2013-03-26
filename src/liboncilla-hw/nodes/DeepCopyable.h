@@ -27,22 +27,24 @@ public:
      * Mark this node as changed by adding it to ChangedDeepCopyables.
      */
     void mark();
+
+    /**
+     * Make deep copies of all items in the ChangedDeepCopyables set.
+     */
+    static void makeDeepCopies();
+
+    /**
+     * Clear the list of to be deep copied objects, ChangedDeepCopyables.
+     */
+    static void clearMarks();
+
+private:
+    /**
+     * Set of DeepCopyable items, that are to be deep copied.
+     */
+    static std::set<DeepCopyable*> s_changedDeepCopyables;
+
 };
-
-/**
- * Set of DeepCopyable items, that are to be deep copied.
- */
-static std::set<DeepCopyable*> ChangedDeepCopyables;
-
-/**
- * Make deep copies of all items in the ChangedDeepCopyables set.
- */
-static void makeDeepCopies();
-
-/**
- * Clear the list of to be deep copied objects, ChangedDeepCopyables.
- */
-static void clearMarks();
 
 }
 }
