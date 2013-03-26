@@ -19,7 +19,8 @@ std::string SupervisorWorld::print() {
 }
 
 void SupervisorWorld::reset() {
-    throw std::runtime_error("You are not god - you can`t reset the world!"); // ;)
+    // You are not - you cannot reset the world! ;)
+    UNAVAILABLE_INTERFACE(SupervisorWorld, reset);
 }
 
 } /* namespace hw */

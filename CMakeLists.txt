@@ -27,8 +27,9 @@ endif("${CMAKE_CXX_COMPILER}" MATCHES ".*clang.*")
 
 pkg_check_modules(DEPS REQUIRED liboncilla-0)
 
-include_directories(${DEPS_INCLUDE_DIRS})
-include_directories(${CMAKE_SOURCE_DIR}/src)
+include_directories(${DEPS_INCLUDE_DIRS}
+                    ${PROJECT_SOURCE_DIR}/src
+                    ${PROJECT_BINARY_DIR}/src)
 
 ################################################################################
 # Source exploration
