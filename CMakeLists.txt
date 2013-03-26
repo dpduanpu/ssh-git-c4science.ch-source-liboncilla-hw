@@ -2,33 +2,17 @@ project(liboncilla-hw C CXX)
 cmake_minimum_required(VERSION 2.8)
 
 
+find_package(BiorobCMakeUtils REQUIRED)
+include_all_biorob_cmake_utils()
 
-set(MAJOR_VERSION 0)
-set(MINOR_VERSION 1)
-set(PATCH_VERSION 0)
-
-set(API_VERSION ${MAJOR_VERSION}.${MINOR_VERSION})
-
-if(${MAJOR_VERSION} EQUAL 0)
-  set(ABI_VERSION ${API_VERSION})
-else(${MAJOR_VERSION} EQUAL 0)
-  set(ABI_VERSION ${MAJOR_VERSION})
-endif(${MAJOR_VERSION} EQUAL 0)
-
-set(VERSION_STRING ${API_VERSION}.${PATCH_VERSION})
-
+make_std_versionning(MAJOR 0 MINOR 0 PATCH 1) 
 
 find_package(PkgConfig REQUIRED)
 
 
-pkg_check_modules(LIBSBCP libsbcp-0 REQUIRED)
-pkg_check_modules(BIOROB_RBIO biorob-rbio-0 REQUIRED)
-pkg_check_modules(LIBONCILLA liboncilla-0 REQUIRED)
+pkg_check_modules(DEPS REQUIRED liboncilla-0)
 
-include_directories(${LIBSBCP_INCLUDE_DIRS} ${BIOROB_RBIO_INCLUDE_DIRS}
-${LIBONCILLA_INCLUDE_DIRS})
-
-set(INCLUDE_DIR include/liboncilla-hw-${API_VERSION})
+include_directories(${DEPS_INCLUDE_DIRS})
 
 add_subdirectory(src)
 
