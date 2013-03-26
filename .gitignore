@@ -7,3 +7,4 @@ cmake_install.cmake
 .project
 install_manifest.txt
 build/
+.#*
