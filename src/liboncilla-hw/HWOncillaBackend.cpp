@@ -8,6 +8,8 @@
 #include <liboncilla/nodes/SupervisorNodes.h>
 #include <liboncilla/Synchronizer.h>
 
+#include <liboncilla/nodes/Nodes.h>
+
 //export the plugin
 BIOROB_CPP_EXPORT_PLUGIN(OncillaBackend,HWOncillaBackend)
 
