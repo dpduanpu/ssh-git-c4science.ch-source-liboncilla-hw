@@ -7,8 +7,8 @@ set(SRC_FILES HWOncillaBackend.cpp
               nodes/SupervisorL4.cpp
               nodes/SupervisorTrunk.cpp
               nodes/SupervisorWorld.cpp
-			  adapters/rx-io.cpp)
-			
+              nodes/DeepCopyable.cpp)
+
 set(HDR_FILES HWOncillaBackend.h
               Common.h
               nodes/Nodes.h
@@ -20,7 +20,7 @@ set(HDR_FILES HWOncillaBackend.h
               nodes/SupervisorL4.h
               nodes/SupervisorTrunk.h
               nodes/SupervisorWorld.h
-			  adapters/rx-io.h)
+              nodes/DeepCopyable.h)
 
 add_library(oncilla-hw MODULE ${SRC_FILES} ${HDR_FILES})
 
