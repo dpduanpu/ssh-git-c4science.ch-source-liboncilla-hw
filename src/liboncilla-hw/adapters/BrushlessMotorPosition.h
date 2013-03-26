@@ -22,7 +22,13 @@ namespace hw {
 		virtual void SendToProcess(double value);
 
 		virtual double ReadFromProcess();
-		
+
+	private :
+		//\todo replace by liboncilla::hw one
+		rci::oncilla::L1L2::Ptr d_node;
+		double d_range;
+		bool d_reversed;
+		bool d_normalized;
 	};
 
 } /* namespace liboncilla */
