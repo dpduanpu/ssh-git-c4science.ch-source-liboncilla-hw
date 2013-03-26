@@ -6,3 +6,4 @@ cmake_install.cmake
 .cproject
 .project
 install_manifest.txt
+build/

@@ -1,5 +1,5 @@
-set(SRC_FILES )
-set(HDR_FILES )
+set(SRC_FILES HWOncillaBackend.cpp)
+set(HDR_FILES HWOncillaBackend.h)
 
 add_library(oncilla-hw MODULE ${SRC_FILES} ${HDR_FILES} )
 
