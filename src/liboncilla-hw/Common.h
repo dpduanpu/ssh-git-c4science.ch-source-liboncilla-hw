@@ -3,9 +3,9 @@
 #include <liboncilla/exceptions/NotImplementedError.h>
 
 #define NOT_IMPLEMENTED_STUB(className,methodName) do{\
-    throw rci::oncilla::NotImplementedError("liboncilla-hw",#methodName,#className);\
+	throw rci::oncilla::NotImplementedError("liboncilla-hw",#methodName,#className); \
 }while(0)
 
-#define UNAVAILABLE_INTERFACE(className,methodName) do{\
-    throw rci::oncilla::UnavailableInterfaceError("liboncilla-hw",#methodName,#className);\
+#define UNAVAILABLE_INTERFACE(reason,className,methodName) do{\
+	throw rci::oncilla::UnavailableInterfaceError(reason,"liboncilla-hw",#methodName,#className); \
 }while(0)

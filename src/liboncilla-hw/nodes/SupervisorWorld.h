@@ -16,10 +16,6 @@ public:
 
     std::string print();
 
-private:
-    /// Component logger
-    rsc::logging::LoggerPtr logger;
-
 };
 
 } /* namespace hw */
