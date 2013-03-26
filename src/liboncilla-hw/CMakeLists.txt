@@ -1,5 +1,3 @@
-include_directories(BEFORE ${CMAKE_SOURCE_DIR}/src)
-
 set(SRC_FILES HWOncillaBackend.cpp
               nodes/L0.cpp
               nodes/L1.cpp
@@ -7,7 +5,7 @@ set(SRC_FILES HWOncillaBackend.cpp
               nodes/L3.cpp)
 set(HDR_FILES HWOncillaBackend.h
               Common.h
-              Nodes.h
+              nodes/Nodes.h
               nodes/L0.h
               nodes/L1.h
               nodes/L2.h

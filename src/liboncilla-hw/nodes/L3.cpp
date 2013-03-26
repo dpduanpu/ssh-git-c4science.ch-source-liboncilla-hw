@@ -12,5 +12,9 @@ L3::L3(const std::string & name) :
 L3::~L3() {
 }
 
+JointAnglesPtr L3::getJointPosition() const {
+    NOT_IMPLEMENTED_STUB(L3, getJointPosition);
+}
+
 } /* namespace hw */
 } /* namespace liboncilla */
