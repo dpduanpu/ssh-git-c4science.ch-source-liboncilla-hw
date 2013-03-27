@@ -9,6 +9,11 @@ namespace hw {
 
 using namespace rci;
 
+/**
+ * Supervising the L4 (foot) nodes has to be done by external sensory, e. g.:
+ * - motion capturing system for L4 pose in cartesian world coordinates
+ * - pressure plate for contact forces
+ */
 class SupervisorL4: public rci::oncilla::SupervisorL4 {
 public:
     SupervisorL4(const std::string & name);
