@@ -25,7 +25,7 @@ endif("${CMAKE_CXX_COMPILER}" MATCHES ".*clang.*")
 # Deps
 ################################################################################
 
-pkg_check_modules(DEPS REQUIRED liboncilla-0)
+pkg_check_modules(DEPS REQUIRED liboncilla-0 robo-xeno-0.3)
 
 include_directories(${DEPS_INCLUDE_DIRS}
                     ${PROJECT_SOURCE_DIR}/src
