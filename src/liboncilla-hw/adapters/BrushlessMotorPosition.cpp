@@ -22,7 +22,7 @@ void BrushlessMotorPosition::SendToProcess(double value){
 		actualValue *= 2 * M_PI;
 	}
 
-	d_node->unsafeUpdateJointPosition(L1L2::MotorAxisIndex,actualValue)
+	d_node->unsafeUpdateJointPosition(L1L2::MotorAxisIndex,actualValue);
 
 	d_node->mark();
 	

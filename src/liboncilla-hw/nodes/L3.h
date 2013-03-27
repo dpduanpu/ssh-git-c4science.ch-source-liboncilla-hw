@@ -8,15 +8,15 @@
 namespace liboncilla {
 namespace hw {
 
-using namespace rci;
-
 class L3 : public rci::oncilla::L3 ,
            public DeepCopyable {
 public:
+	typedef boost::shared_ptr< ::liboncilla::hw::L3> Ptr;
+	
 	L3(const std::string & name);
 	virtual ~L3();
 
-	virtual JointAnglesPtr getJointPosition() const;
+	virtual rci::JointAnglesPtr getJointPosition() const;
 
 	virtual void deepCopyResources();
 

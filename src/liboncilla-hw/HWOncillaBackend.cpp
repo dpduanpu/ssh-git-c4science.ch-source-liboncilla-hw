@@ -57,7 +57,7 @@ boost::shared_ptr<rci::oncilla::L1L2>
 HWOncillaBackend::CreateL1(rci::oncilla::Leg leg , 
                            const std::string& name){
 
-	ro::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
+	loh::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
 
 	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
 	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
@@ -68,13 +68,14 @@ HWOncillaBackend::CreateL1(rci::oncilla::Leg leg ,
 	}
 
 	std::tr1::shared_ptr<loh::BrushlessMotorPosition> 
-		l1Adapter(new loh::BrushlessMotorPosition(boost::static_pointer_cast<loh::L1L2,ro::L1L2>(node),
+		l1Adapter(new loh::BrushlessMotorPosition(node,
 		                                          range, 
 		                                          isReversed, 
 		                                          NOT_NORMALIZED));
 
-	rx::Input::Ptr inMeAdapter(new loh::MagneticEncoder(boost::dynamic_pointer_cast<rci::PositionSensing>(node),
-	                                                    ENCODER_RATIO_L1, ro::L1L2::MagneticEncoderIndex));
+	rx::Input::Ptr inMeAdapter(new loh::MagneticEncoder<loh::L1L2>(node,
+	                                                               ENCODER_RATIO_L1, 
+	                                                               ro::L1L2::MagneticEncoderIndex));
 	
 	rtio::Input::Ptr l1In = d_synchronizer->GetInput(legPrefix(leg) + L1_POSITION_SUFFIX);
 	rtio::Output::Ptr l1Out = d_synchronizer->GetOutput(legPrefix(leg) + L1_POSITION_SUFFIX);
@@ -98,14 +99,14 @@ HWOncillaBackend::CreateL1(rci::oncilla::Leg leg ,
 
 	me1In->SetProcessInput(inMeAdapter);
 
-	return node;
+	return boost::static_pointer_cast<ro::L1L2,loh::L1L2>(node);
 }
 
 boost::shared_ptr<rci::oncilla::L1L2> 
 HWOncillaBackend::CreateL2(rci::oncilla::Leg leg ,
                            const std::string& name){
 
-	ro::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
+	loh::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
 
 	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
 	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
@@ -116,13 +117,14 @@ HWOncillaBackend::CreateL2(rci::oncilla::Leg leg ,
 	}
 
 	std::tr1::shared_ptr<loh::BrushlessMotorPosition> 
-		l2Adapter(new loh::BrushlessMotorPosition(boost::static_pointer_cast<loh::L1L2,ro::L1L2>(node),
+		l2Adapter(new loh::BrushlessMotorPosition(node,
 		                                          range, 
 		                                          isReversed, 
 		                                          NOT_NORMALIZED));
-
-	rx::Input::Ptr inMeAdapter(new loh::MagneticEncoder(boost::dynamic_pointer_cast<rci::PositionSensing>(node),
-	                                                    ENCODER_RATIO_L2, ro::L1L2::MagneticEncoderIndex));
+	
+	rx::Input::Ptr inMeAdapter(new loh::MagneticEncoder<loh::L1L2>(node,
+	                                                               ENCODER_RATIO_L2, 
+	                                                               ro::L1L2::MagneticEncoderIndex));
 	
 	rtio::Input::Ptr l2In = d_synchronizer->GetInput(legPrefix(leg) + L2_POSITION_SUFFIX);
 	rtio::Output::Ptr l2Out = d_synchronizer->GetOutput(legPrefix(leg) + L2_POSITION_SUFFIX);
@@ -146,17 +148,18 @@ HWOncillaBackend::CreateL2(rci::oncilla::Leg leg ,
 
 	me2In->SetProcessInput(inMeAdapter);
 
-	return node;
+	return boost::static_pointer_cast<ro::L1L2,loh::L1L2>(node);
 }
 
 boost::shared_ptr<rci::oncilla::L3> 
 HWOncillaBackend::CreateL3(rci::oncilla::Leg leg ,
                            const std::string& name){
 
-	ro::L3::Ptr node(new loh::L3(name));
+	loh::L3::Ptr node(new loh::L3(name));
 
-	rx::Input::Ptr adapter(new loh::MagneticEncoder(boost::static_pointer_cast<rci::PositionSensing>(node),
-	                                                ENCODER_RATIO_L3, 0));
+	rx::Input::Ptr adapter(new loh::MagneticEncoder<loh::L3>(node,
+	                                                         ENCODER_RATIO_L3, 
+	                                                         0));
 	rtio::Input::Ptr me = d_synchronizer->GetInput(legPrefix(leg) + ME3_SUFFIX);
 
 	if (! me ) {
@@ -166,7 +169,7 @@ HWOncillaBackend::CreateL3(rci::oncilla::Leg leg ,
 	}
 
 	me->SetProcessInput(adapter);
-	return node;
+return boost::static_pointer_cast<ro::L3,loh::L3>(node);
 }
 
 boost::shared_ptr<rci::oncilla::Trunk> HWOncillaBackend::CreateTrunk(){

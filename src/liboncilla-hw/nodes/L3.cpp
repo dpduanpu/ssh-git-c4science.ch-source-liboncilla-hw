@@ -2,11 +2,11 @@
 
 #include "liboncilla-hw/Common.h"
 
-namespace liboncilla {
-namespace hw {
+using namespace liboncilla::hw;
+using namespace rci;
 
 L3::L3(const std::string & name)
-		: rci::oncilla::L3(name){
+	: rci::oncilla::L3(name){
 }
 
 L3::~L3(){
@@ -20,5 +20,3 @@ void L3::deepCopyResources(){
 	_latestJointPosition = JointAngles::copy(*_latestJointPosition);
 }
 
-} /* namespace hw */
-} /* namespace liboncilla */

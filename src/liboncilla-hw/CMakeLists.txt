@@ -9,8 +9,7 @@ set(SRC_FILES HWOncillaBackend.cpp
               nodes/SupervisorWorld.cpp
               nodes/DeepCopyable.cpp
               adapters/BrushlessMotorPosition.cpp
-			  adapters/Servo.cpp
-			  adapters/MagneticEncoder.cpp)
+			  adapters/Servo.cpp)
 
 set(HDR_FILES HWOncillaBackend.h
               Synchronizer.h
@@ -26,8 +25,7 @@ set(HDR_FILES HWOncillaBackend.h
               nodes/DeepCopyable.h
               adapters/Adapters.h
               adapters/BrushlessMotorPosition.h
-			  adapters/Servo.h
-			  adapters/MagneticEncoder.h)
+			  adapters/Servo.h)
 
 add_library(oncilla-hw MODULE ${SRC_FILES} ${HDR_FILES})
 
