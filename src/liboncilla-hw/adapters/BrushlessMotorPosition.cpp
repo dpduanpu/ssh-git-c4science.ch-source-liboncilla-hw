@@ -2,7 +2,7 @@
 
 using namespace liboncilla::hw;
 
-BrushlessMotorPosition::BrushlessMotorPosition(const rci::oncilla::L1L2::Ptr & node,
+BrushlessMotorPosition::BrushlessMotorPosition(const ::liboncilla::hw::L1L2::Ptr & node,
                                                unsigned int hardwareRange,
                                                bool isReversed,
                                                bool isNormalized)
@@ -17,12 +17,14 @@ BrushlessMotorPosition::~BrushlessMotorPosition(){
 
 void BrushlessMotorPosition::SendToProcess(double value){
 
-	double actualValue = (d_reversed ? d_range - value : value ) / (d_range);
+	double actualValue = (d_reversed ? d_range - value : value ) / 4096.0;
 	if (!d_normalized){
 		actualValue *= 2 * M_PI;
 	}
 
-	//\todo do the actual update and marking
+	d_node->unsafeUpdateJointPosition(L1L2::MotorAxisIndex,actualValue)
+
+	d_node->mark();
 	
 }
 
@@ -33,5 +35,5 @@ double BrushlessMotorPosition::ReadFromProcess(){
 		nodeValue /= 2 * M_PI;
 	}
 
-	return d_range * (d_reversed ? 1.0 - nodeValue : nodeValue);
+	return (d_reversed ? d_range - 4096.0 * nodeValue : 4096.0 * nodeValue);
 }

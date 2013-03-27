@@ -11,6 +11,7 @@ using namespace rci;
 
 class L1L2 : public rci::oncilla::L1L2, public DeepCopyable {
 public:
+	typedef boost::shared_ptr<L1L2> Ptr;
 	L1L2(rci::oncilla::Synchronizer & s , const std::string & name);
 	virtual ~L1L2();
 
@@ -24,6 +25,8 @@ public:
 	virtual JointAnglesPtr getJointPosition() const;
 
 	virtual void deepCopyResources();
+
+	void unsafeUpdateJointPosition(unsigned int index,double value);
 };
 
 } /* namespace hw */

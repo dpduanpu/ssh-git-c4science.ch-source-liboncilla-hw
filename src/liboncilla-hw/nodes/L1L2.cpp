@@ -53,5 +53,10 @@ void L1L2::deepCopyResources(){
 	        new JointImpedance(_lastCommandedImpedance->_values));
 }
 
+
+void L1L2::unsafeUpdateJointPosition(unsigned int index, double value){
+	_latestJointPosition->setFromRad(index,value);
+}
+
 } /* namespace hw */
 } /* namespace liboncilla */

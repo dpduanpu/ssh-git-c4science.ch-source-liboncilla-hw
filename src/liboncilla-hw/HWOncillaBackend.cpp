@@ -68,7 +68,7 @@ HWOncillaBackend::CreateL1(rci::oncilla::Leg leg ,
 	}
 
 	std::tr1::shared_ptr<loh::BrushlessMotorPosition> 
-		l1Adapter(new loh::BrushlessMotorPosition(node,
+		l1Adapter(new loh::BrushlessMotorPosition(boost::static_pointer_cast<loh::L1L2,ro::L1L2>(node),
 		                                          range, 
 		                                          isReversed, 
 		                                          NOT_NORMALIZED));
@@ -116,7 +116,7 @@ HWOncillaBackend::CreateL2(rci::oncilla::Leg leg ,
 	}
 
 	std::tr1::shared_ptr<loh::BrushlessMotorPosition> 
-		l2Adapter(new loh::BrushlessMotorPosition(node,
+		l2Adapter(new loh::BrushlessMotorPosition(boost::static_pointer_cast<loh::L1L2,ro::L1L2>(node),
 		                                          range, 
 		                                          isReversed, 
 		                                          NOT_NORMALIZED));
