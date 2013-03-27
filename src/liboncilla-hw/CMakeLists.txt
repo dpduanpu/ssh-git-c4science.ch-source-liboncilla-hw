@@ -1,4 +1,5 @@
 set(SRC_FILES HWOncillaBackend.cpp
+              Synchronizer.cpp
               nodes/Trunk.cpp
               nodes/L0.cpp
               nodes/L1L2.cpp
@@ -13,6 +14,7 @@ set(SRC_FILES HWOncillaBackend.cpp
 			  adapters/MagneticEncoder.cpp)
 
 set(HDR_FILES HWOncillaBackend.h
+              Synchronizer.h
               Common.h
               nodes/Nodes.h
               nodes/Trunk.h
