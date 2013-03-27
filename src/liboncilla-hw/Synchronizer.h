@@ -12,6 +12,8 @@ namespace hw {
 
 	class Synchronizer : public rci::oncilla::Synchronizer {
 	public :
+		typedef boost::shared_ptr< ::liboncilla::hw::Synchronizer > Ptr;
+
 		Synchronizer();
 		virtual ~Synchronizer();
 	
@@ -19,6 +21,8 @@ namespace hw {
 		::rtio::Output::Ptr GetOutput(const std::string & name);
 		
 		double lastProcessTimeStep() const;
+
+		void    calibrateIfNeeded();
 
 	protected:
 		void ProcessAsyncPrimpl();

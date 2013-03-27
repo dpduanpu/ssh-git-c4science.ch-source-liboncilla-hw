@@ -12,18 +12,23 @@ BIOROB_CPP_EXPORT_PLUGIN(OncillaBackend, HWOncillaBackend);
 namespace ro = rci::oncilla;
 namespace loh = liboncilla::hw;
 
+const char * HWOncillaBackend::L1_POSITION_SUFFIX = "_L1";
+const char * HWOncillaBackend::L2_POSITION_SUFFIX = "_L2";
+
+const char * HWOncillaBackend::ME1_SUFFIX = "_ME1";
+const char * HWOncillaBackend::ME2_SUFFIX = "_ME2";
+const char * HWOncillaBackend::ME3_SUFFIX = "_ME3";
+
+
 HWOncillaBackend::HWOncillaBackend()
-		: synchronizer(){
+	: d_synchronizer(new loh::Synchronizer()){
 }
 
 HWOncillaBackend::~HWOncillaBackend(){
 }
 
 boost::shared_ptr<rci::oncilla::Synchronizer> HWOncillaBackend::CreateSynchronizer(){
-	// TODO: Create synchronizer when it`s no longer pure virtual
-	synchronizer = ro::Synchronizer::Ptr();
-
-	return synchronizer;
+	return boost::static_pointer_cast<ro::Synchronizer,loh::Synchronizer>(d_synchronizer);
 }
 
 boost::shared_ptr<rci::oncilla::L0> HWOncillaBackend::CreateL0(
@@ -37,6 +42,8 @@ boost::shared_ptr<rci::oncilla::L0> HWOncillaBackend::CreateL0(
 	        boost::dynamic_pointer_cast<rci::PositionSensing>(n),
 	        ENCODER_RATIO_L1, ro::L1L2::MotorAxisIndex);
 
+   
+
 	// TODO: Glue inputs and outputs to the adapter
 
 	return n;
@@ -45,7 +52,7 @@ boost::shared_ptr<rci::oncilla::L0> HWOncillaBackend::CreateL0(
 boost::shared_ptr<rci::oncilla::L1L2> HWOncillaBackend::CreateL1(
         rci::oncilla::Leg leg , const std::string& name){
 
-	ro::L1L2::Ptr n(new loh::L1L2(*synchronizer, name));
+	ro::L1L2::Ptr n(new loh::L1L2(*d_synchronizer, name));
 
 	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
 	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
@@ -69,7 +76,7 @@ boost::shared_ptr<rci::oncilla::L1L2> HWOncillaBackend::CreateL1(
 boost::shared_ptr<rci::oncilla::L1L2> HWOncillaBackend::CreateL2(
         rci::oncilla::Leg leg , const std::string& name){
 
-	ro::L1L2::Ptr n(new loh::L1L2(*synchronizer, name));
+	ro::L1L2::Ptr n(new loh::L1L2(*d_synchronizer, name));
 
 	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
 	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?

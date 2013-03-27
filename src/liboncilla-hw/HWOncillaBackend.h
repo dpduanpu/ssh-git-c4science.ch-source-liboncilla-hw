@@ -1,7 +1,7 @@
 #pragma once
 
 #include <liboncilla/utils/OncillaBackend.h>
-#include <liboncilla/Synchronizer.h>
+#include "Synchronizer.h"
 
 /**
  * Liboncilla backend for the Oncilla hardware, providing all resource node
@@ -30,8 +30,8 @@ public:
 	virtual boost::shared_ptr<rci::oncilla::SupervisorL4> CreateSupervisorL4(
 	        rci::oncilla::Leg , const std::string&);
 
-protected:
-	::rci::oncilla::Synchronizer::Ptr synchronizer;
+
+
 
 private:
 	static const bool NORMALIZED = true;
@@ -47,7 +47,18 @@ private:
 	static const double ENCODER_RATIO_L2 = 1.0 / 4096.0; // TODO: CHECK
 	static const double ENCODER_RATIO_L3 = 1.0 / 4096.0; // TODO: CHECK
 
+	static const std::string & legPrefix(rci::oncilla::Leg l);
+	static const char * L1_POSITION_SUFFIX;
+	static const char * L2_POSITION_SUFFIX;
+
+	static const char * ME1_SUFFIX;
+	static const char * ME2_SUFFIX;
+	static const char * ME3_SUFFIX;
+
+
 	bool isLeftLeg(rci::oncilla::Leg);
 
 	bool isForeLeg(rci::oncilla::Leg);
+
+	liboncilla::hw::Synchronizer::Ptr d_synchronizer;
 };

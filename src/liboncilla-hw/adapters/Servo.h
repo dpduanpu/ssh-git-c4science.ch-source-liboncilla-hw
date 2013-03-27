@@ -1,6 +1,6 @@
 #pragma once
 
-#include <liboncilla-hw/adapters/rx-io.h>
+#include <robo-xeno/rtio/IO.h>
 #include <liboncilla-hw/nodes/L0.h>
 
 

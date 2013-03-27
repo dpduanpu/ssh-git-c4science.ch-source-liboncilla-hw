@@ -9,7 +9,6 @@ Synchronizer::Synchronizer()
 }
 
 Synchronizer::~Synchronizer(){
-
 }
 
 ::rtio::Input::Ptr Synchronizer::GetInput(const std::string & name) {
@@ -18,6 +17,10 @@ Synchronizer::~Synchronizer(){
 
 ::rtio::Output::Ptr Synchronizer::GetOutput(const std::string & name) {
 	return d_manager.GetOutput(name);
+}
+
+void Synchronizer::calibrateIfNeeded(){
+	NOT_IMPLEMENTED_STUB(calibrateIfNeeded,Synchronizer);
 }
 
 double Synchronizer::lastProcessTimeStep() const {

@@ -8,7 +8,6 @@ set(SRC_FILES HWOncillaBackend.cpp
               nodes/SupervisorTrunk.cpp
               nodes/SupervisorWorld.cpp
               nodes/DeepCopyable.cpp
-              adapters/rx-io.cpp
               adapters/BrushlessMotorPosition.cpp
 			  adapters/Servo.cpp
 			  adapters/MagneticEncoder.cpp)
@@ -25,7 +24,6 @@ set(HDR_FILES HWOncillaBackend.h
               nodes/SupervisorTrunk.h
               nodes/SupervisorWorld.h
               nodes/DeepCopyable.h
-              adapters/rx-io.h
               adapters/Adapters.h
               adapters/BrushlessMotorPosition.h
 			  adapters/Servo.h
