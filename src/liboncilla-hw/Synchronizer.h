@@ -46,6 +46,10 @@ namespace hw {
 
 		const static double TIMESTEP = 0.01;
 
+		unsigned long d_overruns;
+
+		bool d_firstStepped;
+
 	};
 
 
