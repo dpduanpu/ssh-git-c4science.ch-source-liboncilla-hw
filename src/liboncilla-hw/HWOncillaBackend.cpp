@@ -31,28 +31,33 @@ boost::shared_ptr<rci::oncilla::Synchronizer> HWOncillaBackend::CreateSynchroniz
 	return boost::static_pointer_cast<ro::Synchronizer,loh::Synchronizer>(d_synchronizer);
 }
 
-boost::shared_ptr<rci::oncilla::L0> HWOncillaBackend::CreateL0(
-        rci::oncilla::Leg leg , const std::string& name){
+boost::shared_ptr<rci::oncilla::L0> 
+HWOncillaBackend::CreateL0(rci::oncilla::Leg leg ,
+                           const std::string& name){
 
-	ro::L0::Ptr n(new loh::L0(name));
+	ro::L0::Ptr node(new loh::L0(name));
 
 	// TODO: Force sensing adapter
 
-	loh::MagneticEncoder *encoder = new loh::MagneticEncoder(
-	        boost::dynamic_pointer_cast<rci::PositionSensing>(n),
-	        ENCODER_RATIO_L1, ro::L1L2::MotorAxisIndex);
-
+	rx::Output::Ptr servo(new loh::Servo(node));
+	
+	rtio::Output::Ptr o = d_synchronizer->GetOutput(legPrefix(leg));
+	if(!o) {
+		UNAVAILABLE_INTERFACE("Could not find suitable servo device for " + legPrefix(leg) + " node",
+		                      HWOncillaBackend,
+		                      CreateL0);
+	}
    
+	o->SetProcessOutput(servo);
 
-	// TODO: Glue inputs and outputs to the adapter
-
-	return n;
+	return node;
 }
 
-boost::shared_ptr<rci::oncilla::L1L2> HWOncillaBackend::CreateL1(
-        rci::oncilla::Leg leg , const std::string& name){
+boost::shared_ptr<rci::oncilla::L1L2> 
+HWOncillaBackend::CreateL1(rci::oncilla::Leg leg , 
+                           const std::string& name){
 
-	ro::L1L2::Ptr n(new loh::L1L2(*d_synchronizer, name));
+	ro::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
 
 	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
 	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
@@ -61,54 +66,107 @@ boost::shared_ptr<rci::oncilla::L1L2> HWOncillaBackend::CreateL1(
 	} else {
 		range = HW_RANGE_L1_HIND;
 	}
-	loh::BrushlessMotorPosition *motor = new loh::BrushlessMotorPosition(
-	        n, range, isReversed, NOT_NORMALIZED);
 
-	loh::MagneticEncoder *encoder = new loh::MagneticEncoder(
-	        boost::dynamic_pointer_cast<rci::PositionSensing>(n),
-	        ENCODER_RATIO_L1, ro::L1L2::MagneticEncoderIndex);
+	std::tr1::shared_ptr<loh::BrushlessMotorPosition> 
+		l1Adapter(new loh::BrushlessMotorPosition(node,
+		                                          range, 
+		                                          isReversed, 
+		                                          NOT_NORMALIZED));
 
-	// TODO: Glue inputs and outputs to the adapters
+	rx::Input::Ptr inMeAdapter(new loh::MagneticEncoder(boost::dynamic_pointer_cast<rci::PositionSensing>(node),
+	                                                    ENCODER_RATIO_L1, ro::L1L2::MagneticEncoderIndex));
+	
+	rtio::Input::Ptr l1In = d_synchronizer->GetInput(legPrefix(leg) + L1_POSITION_SUFFIX);
+	rtio::Output::Ptr l1Out = d_synchronizer->GetOutput(legPrefix(leg) + L1_POSITION_SUFFIX);
+	
+	rtio::Input::Ptr me1In = d_synchronizer->GetInput(legPrefix(leg) + ME1_SUFFIX);
 
-	return n;
+	if( ! (l1In && l1Out) ){
+		UNAVAILABLE_INTERFACE("Could not find suitable brushless motor device for L1 " + legPrefix(leg) + " node",
+		                      HWONcillaBackend,
+		                      CreateL1);
+	}
+
+	if( !me1In) {
+		UNAVAILABLE_INTERFACE("Could not find suitable Magnetic Encoder device for L1 " + legPrefix(leg) + " node",
+		                      HWOncillaBackend,
+		                      CreateL1);
+	}
+	
+	l1In->SetProcessInput(std::tr1::static_pointer_cast<rx::Input,loh::BrushlessMotorPosition>(l1Adapter));
+	l1Out->SetProcessOutput(std::tr1::static_pointer_cast<rx::Output,loh::BrushlessMotorPosition>(l1Adapter));
+
+	me1In->SetProcessInput(inMeAdapter);
+
+	return node;
 }
 
-boost::shared_ptr<rci::oncilla::L1L2> HWOncillaBackend::CreateL2(
-        rci::oncilla::Leg leg , const std::string& name){
+boost::shared_ptr<rci::oncilla::L1L2> 
+HWOncillaBackend::CreateL2(rci::oncilla::Leg leg ,
+                           const std::string& name){
 
-	ro::L1L2::Ptr n(new loh::L1L2(*d_synchronizer, name));
+	ro::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
 
 	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
 	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
 	if (isForeLeg(leg)) {
-		range = HW_RANGE_L1_FORE;
+		range = HW_RANGE_L2_FORE;
 	} else {
-		range = HW_RANGE_L1_HIND;
+		range = HW_RANGE_L2_HIND;
 	}
-	loh::BrushlessMotorPosition *motor = new loh::BrushlessMotorPosition(
-	        n, range, isReversed, NORMALIZED);
 
-	loh::MagneticEncoder *encoder = new loh::MagneticEncoder(
-	        boost::dynamic_pointer_cast<rci::PositionSensing>(n),
-	        ENCODER_RATIO_L2, ro::L1L2::MagneticEncoderIndex);
+	std::tr1::shared_ptr<loh::BrushlessMotorPosition> 
+		l2Adapter(new loh::BrushlessMotorPosition(node,
+		                                          range, 
+		                                          isReversed, 
+		                                          NOT_NORMALIZED));
 
-	// TODO: Glue inputs and outputs to the adapters
+	rx::Input::Ptr inMeAdapter(new loh::MagneticEncoder(boost::dynamic_pointer_cast<rci::PositionSensing>(node),
+	                                                    ENCODER_RATIO_L2, ro::L1L2::MagneticEncoderIndex));
+	
+	rtio::Input::Ptr l2In = d_synchronizer->GetInput(legPrefix(leg) + L2_POSITION_SUFFIX);
+	rtio::Output::Ptr l2Out = d_synchronizer->GetOutput(legPrefix(leg) + L2_POSITION_SUFFIX);
+	
+	rtio::Input::Ptr me2In = d_synchronizer->GetInput(legPrefix(leg) + ME2_SUFFIX);
 
-	return n;
+	if( ! (l2In && l2Out) ){
+		UNAVAILABLE_INTERFACE("Could not find suitable brushless motor device for L2 " + legPrefix(leg) + " node",
+		                      HWONcillaBackend,
+		                      CreateL2);
+	}
+
+	if( ! me2In) {
+		UNAVAILABLE_INTERFACE("Could not find suitable Magnetic Encoder device for L2 " + legPrefix(leg) + " node",
+		                      HWOncillaBackend,
+		                      CreateL2);
+	}
+	
+	l2In->SetProcessInput(std::tr1::static_pointer_cast<rx::Input,loh::BrushlessMotorPosition>(l2Adapter));
+	l2Out->SetProcessOutput(std::tr1::static_pointer_cast<rx::Output,loh::BrushlessMotorPosition>(l2Adapter));
+
+	me2In->SetProcessInput(inMeAdapter);
+
+	return node;
 }
 
-boost::shared_ptr<rci::oncilla::L3> HWOncillaBackend::CreateL3(
-        rci::oncilla::Leg leg , const std::string& name){
+boost::shared_ptr<rci::oncilla::L3> 
+HWOncillaBackend::CreateL3(rci::oncilla::Leg leg ,
+                           const std::string& name){
 
-	ro::L3::Ptr n(new loh::L3(name));
+	ro::L3::Ptr node(new loh::L3(name));
 
-	loh::MagneticEncoder *encoder = new loh::MagneticEncoder(
-	        boost::static_pointer_cast<rci::PositionSensing>(n),
-	        ENCODER_RATIO_L3, ro::L1L2::MagneticEncoderIndex);
+	rx::Input::Ptr adapter(new loh::MagneticEncoder(boost::static_pointer_cast<rci::PositionSensing>(node),
+	                                                ENCODER_RATIO_L3, 0));
+	rtio::Input::Ptr me = d_synchronizer->GetInput(legPrefix(leg) + ME3_SUFFIX);
 
-	// TODO: Glue inputs and outputs to the adapter
+	if (! me ) {
+		UNAVAILABLE_INTERFACE("Could not find suitable magnetic encoder device for L3 " + legPrefix(leg) + " node",
+		                      HWOncillaBackend,
+		                      CreateL3);
+	}
 
-	return n;
+	me->SetProcessInput(adapter);
+	return node;
 }
 
 boost::shared_ptr<rci::oncilla::Trunk> HWOncillaBackend::CreateTrunk(){

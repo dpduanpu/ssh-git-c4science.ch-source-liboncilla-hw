@@ -40,12 +40,14 @@ private:
 	static const bool REVERSED = true;
 	static const bool NOT_REVERSED = false;
 
-	static const unsigned int HW_RANGE_L1_FORE = 1850; // TODO: CHECK
-	static const unsigned int HW_RANGE_L1_HIND = 2200; // TODO: CHECK
+	static const unsigned int HW_RANGE_L1_FORE = 1138; // TODO: CHECK
+	static const unsigned int HW_RANGE_L1_HIND = 1138; // TODO: CHECK
+	static const unsigned int HW_RANGE_L2_FORE = 1850; // TODO: CHECK
+	static const unsigned int HW_RANGE_L2_HIND = 2200; // TODO: CHECK
 
-	static const double ENCODER_RATIO_L1 = 1.0 / 4096.0; // TODO: CHECK
-	static const double ENCODER_RATIO_L2 = 1.0 / 4096.0; // TODO: CHECK
-	static const double ENCODER_RATIO_L3 = 1.0 / 4096.0; // TODO: CHECK
+	static const double ENCODER_RATIO_L1 = 25.0/12.0; // TODO: CHECK
+	static const double ENCODER_RATIO_L2 = 1.0; // TODO: CHECK
+	static const double ENCODER_RATIO_L3 = 1.0; // TODO: CHECK
 
 	static const std::string & legPrefix(rci::oncilla::Leg l);
 	static const char * L1_POSITION_SUFFIX;
