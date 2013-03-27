@@ -1,5 +1,6 @@
 #pragma once
 
+#include <robo-xeno/module/ModuleLoader.h>
 
 #include <liboncilla/Synchronizer.h>
 #include <robo-xeno/rtio/Manager.h>
@@ -24,14 +25,27 @@ namespace hw {
 
 		void    calibrateIfNeeded();
 
+		static void SigHandler(int c);
+
 	protected:
 		void ProcessAsyncPrimpl();
 		void WaitForProcessAsyncPrimpl();
 
 	private :
+		typedef std::tr1::shared_ptr<rtio::Manager> ManagerPtr;
+		typedef std::tr1::shared_ptr<rx::ModuleLoader> ModuleLoaderPtr;
+		void Init();
 
-		rtio::Manager d_manager;
-	
+		void InitRT();
+		void InitModules();
+
+		static ManagerPtr s_manager;
+		//member because holds the module, so we should avoid dlclose
+		//our object.
+		static ModuleLoaderPtr s_loader;
+
+		const static double TIMESTEP = 0.01;
+
 	};
 
 
