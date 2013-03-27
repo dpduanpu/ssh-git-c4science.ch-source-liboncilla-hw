@@ -1,9 +1,7 @@
-#ifndef LIBONCILLA_HW_NODES_NODES_H_
-#define LIBONCILLA_HW_NODES_NODES_H_
+#pragma once
 
-
-//list here all the nodes
-
-
-
-#endif //LIBONCILLA_HW_NODES_NODES_H_
+// list here all the nodes
+#include "L0.h"
+#include "L1L2.h"
+#include "L3.h"
+#include "Trunk.h"
