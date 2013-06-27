@@ -11,7 +11,8 @@
 
 #include <liboncilla-hw/config/Config.h>
 
-using namespace liboncilla::hw;
+namespace liboncilla{
+namespace hw {
 
 Synchronizer::Synchronizer(const MainSection & config)
 	: rci::oncilla::Synchronizer("Oncilla HW Synchronizer")
@@ -85,3 +86,6 @@ void Synchronizer::WaitForProcessAsyncPrimpl(){
 	}
 
 }
+
+} //namespace hw
+} //namespace liboncilla

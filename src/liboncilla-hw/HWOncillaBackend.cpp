@@ -53,6 +53,10 @@ HWOncillaBackend::CreateL0(rci::oncilla::Leg leg ,
 
 	ro::L0::Ptr node(new loh::L0(name));
 
+	loh::Synchronizer::RegistrationAccessor::RegisterL0(*d_synchronizer,
+	                                                    leg,
+	                                                    node);
+
 	return node;
 }
 
@@ -62,13 +66,9 @@ HWOncillaBackend::CreateL1(rci::oncilla::Leg leg ,
 
 	loh::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
 
-	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
-	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
-	if (IsForeLeg(leg)) {
-		range = HW_RANGE_L1_FORE;
-	} else {
-		range = HW_RANGE_L1_HIND;
-	}
+	loh::Synchronizer::RegistrationAccessor::RegisterL1(*d_synchronizer,
+	                                                    leg,
+	                                                    node);
 
 	return boost::static_pointer_cast<ro::L1L2,loh::L1L2>(node);
 }
@@ -79,15 +79,9 @@ HWOncillaBackend::CreateL2(rci::oncilla::Leg leg ,
 
 	loh::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
 
-	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
-	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
-	if (IsForeLeg(leg)) {
-		range = HW_RANGE_L2_FORE;
-	} else {
-		range = HW_RANGE_L2_HIND;
-	}
-
-
+	loh::Synchronizer::RegistrationAccessor::RegisterL2(*d_synchronizer,
+	                                                    leg,
+	                                                    node);
 
 	return boost::static_pointer_cast<ro::L1L2,loh::L1L2>(node);
 }
@@ -98,15 +92,24 @@ HWOncillaBackend::CreateL3(rci::oncilla::Leg leg ,
 
 	loh::L3::Ptr node(new loh::L3(name));
 
+	loh::Synchronizer::RegistrationAccessor::RegisterL3(*d_synchronizer,
+	                                                    leg,
+	                                                    node);
+
 	return boost::static_pointer_cast<ro::L3,loh::L3>(node);
 }
 
 boost::shared_ptr<rci::oncilla::Trunk> HWOncillaBackend::CreateTrunk(){
-	return ro::Trunk::Ptr(new loh::Trunk());
+	loh::Trunk::Ptr node(new loh::Trunk());
+
+	loh::Synchronizer::RegistrationAccessor::RegisterTrunk(*d_synchronizer,
+	                                                       node);
+
+	return boost::static_pointer_cast<ro::Trunk,loh::Trunk>(node);
 }
 
 boost::shared_ptr<rci::oncilla::SupervisorTrunk> HWOncillaBackend::CreateSupervisorTrunk(){
-	return ro::SupervisorTrunk::Ptr();
+	return ro::SupervisorTrunk::Ptr(new loh::SupervisorTrunk());
 }
 
 boost::shared_ptr<rci::oncilla::SupervisorWorld> HWOncillaBackend::CreateSupervisorWorld(){

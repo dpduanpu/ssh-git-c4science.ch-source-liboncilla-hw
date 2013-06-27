@@ -2,11 +2,16 @@
 
 
 #include <liboncilla/Synchronizer.h>
+#include <liboncilla-hw/xenomai-utils/Utils.h>
+#include <liboncilla-hw/nodes/Nodes.h>
+
+class HWOncillaBackend;
 
 namespace liboncilla {
 
 namespace hw {
 	class MainSection;
+	class Queue;
 
 	class Synchronizer : public rci::oncilla::Synchronizer {
 	public :
@@ -22,6 +27,23 @@ namespace hw {
 
 		static void SigHandler(int c);
 
+		class RegistrationAccessor {
+			static void RegisterTrunk(liboncilla::hw::Synchronizer & itself,
+			                          const Trunk::Ptr & node);
+			static void RegisterL0(liboncilla::hw::Synchronizer & itself,
+			                       rci::oncilla::Leg l,
+			                       const L0::Ptr & node);
+			static void RegisterL1(liboncilla::hw::Synchronizer & itself,
+			                       rci::oncilla::Leg l,
+			                       const L1L2::Ptr & node);
+			static void RegisterL2(liboncilla::hw::Synchronizer & itself,
+			                       rci::oncilla::Leg l,
+			                       const L1L2::Ptr & node);
+			static void RegisterL3(liboncilla::hw::Synchronizer & itself,
+			                       rci::oncilla::Leg l,
+			                       const L3::Ptr & node);
+			friend class ::HWOncillaBackend;
+		};
 	protected:
 		void ProcessAsyncPrimpl();
 		void WaitForProcessAsyncPrimpl();
@@ -32,6 +54,15 @@ namespace hw {
 		void InitRT();
 		void InitModules();
 
+		void RegisterTrunk(const Trunk::Ptr & node);
+		void RegisterL0(rci::oncilla::Leg l,const L0::Ptr & node);
+		void RegisterL1(rci::oncilla::Leg l,const L1L2::Ptr & node);
+		void RegisterL2(rci::oncilla::Leg l,const L1L2::Ptr & node);
+		void RegisterL3(rci::oncilla::Leg l,const L3::Ptr & node);
+
+		void WakeIdleQueues();
+		void IsFinished(const Queue & q);
+
 
 		unsigned long d_overruns;
 
@@ -39,7 +70,46 @@ namespace hw {
 
 		double d_timestep;
 		unsigned int d_priority;
+
+		NativeHolder<RT_EVENT> d_event;
+
 	};
+
+
+	inline void
+	Synchronizer::RegistrationAccessor::RegisterTrunk(Synchronizer & itself,
+	                                                  const Trunk::Ptr & node){
+		itself.RegisterTrunk(node);
+	}
+
+	inline void
+	Synchronizer::RegistrationAccessor::RegisterL0(Synchronizer & itself,
+		                                               rci::oncilla::Leg l,
+		                                               const L0::Ptr & node){
+		itself.RegisterL0(l,node);
+	}
+
+	inline void
+	Synchronizer::RegistrationAccessor::RegisterL1(Synchronizer & itself,
+	                                               rci::oncilla::Leg l,
+	                                               const L1L2::Ptr & node){
+		itself.RegisterL1(l,node);
+	}
+
+	inline void
+	Synchronizer::RegistrationAccessor::RegisterL2(Synchronizer & itself,
+	                                               rci::oncilla::Leg l,
+	                                               const L1L2::Ptr & node) {
+		itself.RegisterL2(l,node);
+	}
+
+	inline void
+	Synchronizer::RegistrationAccessor::RegisterL3(Synchronizer & itself,
+	                                               rci::oncilla::Leg l,
+	                                               const L3::Ptr & node) {
+		itself.RegisterL3(l,node);
+	}
+
 
 
 } /* namespace hw */

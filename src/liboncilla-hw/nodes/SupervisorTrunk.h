@@ -13,6 +13,7 @@ using namespace rci;
  */
 class SupervisorTrunk: public rci::oncilla::SupervisorTrunk {
 public:
+	typedef boost::shared_ptr<SupervisorTrunk> Ptr;
     SupervisorTrunk();
     virtual ~SupervisorTrunk();
 

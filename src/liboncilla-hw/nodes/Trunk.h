@@ -13,6 +13,7 @@ using namespace rci;
 class Trunk : public rci::oncilla::Trunk ,
               public DeepCopyable {
 public:
+	typedef boost::shared_ptr<Trunk> Ptr;
 	Trunk();
 	virtual ~Trunk();
 

@@ -5,3 +5,5 @@
 #include "L1L2.h"
 #include "L3.h"
 #include "Trunk.h"
+#include "SupervisorL4.h"
+#include "SupervisorTrunk.h"
