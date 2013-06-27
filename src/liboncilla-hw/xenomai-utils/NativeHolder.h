@@ -31,9 +31,10 @@ public :
 	void operator()(T * p){
 		int res = (*d_fptr)(p);
 		if(res) {
-			std::cerr << "Got error on xenomai " << d_name << " " << p
+			std::cerr << "Got error on xenomai " << d_name << " " << (void*) p
 			          << " destruction. Code "
-			          << -res << " : " << strerror(-res) << std::endl;
+			          << -res << " : " << strerror(-res)
+			          << std::endl;
 #ifndef NDEBUG
 			exit(255);
 #endif

@@ -19,17 +19,15 @@ unsigned int Queue::s_nbQueues(0);
 const unsigned int Queue::MaxNbQueues(8 * sizeof(unsigned long));
 
 Queue::Queue(unsigned int priority,bool preferNonRt)
-	: d_id(++s_nbQueues)
-	, d_preferNonRt(preferNonRt){
+	: d_id(s_nbQueues++)
+	, d_preferNonRt(preferNonRt)
+	, d_priority(priority){
 	if(s_nbQueues > MaxNbQueues) {
 		std::ostringstream os;
 		os << "Cannot alloacte Queue, maximum allowed : " << MaxNbQueues;
 		throw std::runtime_error(os.str());
 	}
 
-	RT_TASK * t = new RT_TASK();
-	xeno_call(rt_task_create,t,NULL,0,priority,0);
-	d_task = NativeHolder<RT_TASK>(t);
 }
 
 Queue::~Queue(){
@@ -37,7 +35,14 @@ Queue::~Queue(){
 }
 
 void Queue::StartTask() {
-	log(debug,"Starting queue",this);
+	log(debug,"Creating task for Queue ",this);
+
+	RT_TASK * t = new RT_TASK();
+	xeno_call(rt_task_create,t,NULL,0,d_priority,0);
+	d_task = NativeHolder<RT_TASK>(t);
+
+	log(debug,"Starting task for Queue ",this);
+
 	xeno_call(rt_task_start,
 	          d_task.get(),
 	          &Queue::TaskEntryPoint,
@@ -56,13 +61,12 @@ void Queue::StopTask() {
 void Queue::Loop() {
 	RT_EVENT e;
 	xeno_call(rt_event_bind,&e,EventName,TM_INFINITE);
-	unsigned long myMask = 1 << d_id;
 	unsigned long mask;
 
 	InitializeIO();
 
 	while(true) {
-		int res = rt_event_wait(&e,myMask,&mask,EV_ANY,TM_INFINITE);
+		int res = rt_event_wait(&e,Mask(),&mask,EV_ANY,TM_INFINITE);
 
 		if(res == -EIDRM ) { //the event has been deleted, we should exit
 			break;
@@ -78,7 +82,9 @@ void Queue::Loop() {
 
 		PerformIO();
 
+		xeno_call(rt_event_clear,&e,Mask(),&mask);
 	}
+
 	rt_event_unbind(&e);
 }
 

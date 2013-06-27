@@ -5,6 +5,7 @@
  *  \author Alexandre Tuleu
  */
 
+#pragma once
 
 #include <liboncilla-hw/xenomai-utils/Utils.h>
 
@@ -18,13 +19,15 @@ namespace hw {
  */
 class Queue {
 public:
+	const static char * EventName;
+	static unsigned long AllQueueMask();
 	Queue(unsigned int priority,bool preferNonRt);
 	virtual ~Queue();
 
 	/**
 	 * Sends the data from liboncilla-hw to the hardware
 	 */
-	virtual void DownStreamData() = 0;
+	virtual void DownstreamData() = 0;
 	/**
 	 * Sends the data from hardware to liboncilla-hw
 	 */
@@ -43,7 +46,9 @@ public:
 	void StartTask();
 	void StopTask();
 
-	const static char * EventName;
+
+	unsigned long Mask() const;
+
 
 private :
 	static void TaskEntryPoint(void * itself);
@@ -56,7 +61,18 @@ private :
 	NativeHolder<RT_TASK> d_task;
 	const unsigned int d_id;
 	const bool d_preferNonRt;
+	const unsigned int d_priority;
 };
 
+inline unsigned long Queue::Mask() const {
+	return 1 << d_id;
+}
+
+inline unsigned long Queue::AllQueueMask() {
+	if(s_nbQueues == MaxNbQueues) {
+		return -1;
+	}
+	return (1 << s_nbQueues) - 1 ;
+}
 } /* namespace hw */
 } /* namespace liboncilla */

@@ -5,6 +5,10 @@
 #include <liboncilla-hw/xenomai-utils/Utils.h>
 #include <liboncilla-hw/nodes/Nodes.h>
 
+#include "SBCPQueue.h"
+#include "RBIOQueue.h"
+
+
 class HWOncillaBackend;
 
 namespace liboncilla {
@@ -25,7 +29,12 @@ namespace hw {
 
 		void    calibrateIfNeeded();
 
+		virtual bool start();
+		virtual bool stop();
+
 		static void SigHandler(int c);
+
+
 
 		class RegistrationAccessor {
 			static void RegisterTrunk(liboncilla::hw::Synchronizer & itself,
@@ -49,6 +58,7 @@ namespace hw {
 		void WaitForProcessAsyncPrimpl();
 
 	private :
+		typedef std::vector<Queue*> ListOfQueue;
 		void Init();
 		void CheckConfig(const MainSection & config);
 		void InitRT();
@@ -61,7 +71,8 @@ namespace hw {
 		void RegisterL3(rci::oncilla::Leg l,const L3::Ptr & node);
 
 		void WakeIdleQueues();
-		void IsFinished(const Queue & q);
+		void FetchIdleQueues();
+		bool IsFinished(const Queue & q);
 
 
 		unsigned long d_overruns;
@@ -72,6 +83,10 @@ namespace hw {
 		unsigned int d_priority;
 
 		NativeHolder<RT_EVENT> d_event;
+		unsigned long d_idleQueueMask;
+		SBCPQueue  d_sbcpQueue;
+		RBIOQueue  d_rbioQueue;
+		ListOfQueue d_queues;
 
 	};
 
