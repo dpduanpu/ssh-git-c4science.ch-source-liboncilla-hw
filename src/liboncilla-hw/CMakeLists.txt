@@ -8,8 +8,7 @@ set(SRC_FILES HWOncillaBackend.cpp
               nodes/SupervisorTrunk.cpp
               nodes/SupervisorWorld.cpp
               nodes/DeepCopyable.cpp
-              adapters/BrushlessMotorPosition.cpp
-			  adapters/Servo.cpp)
+)
 
 set(HDR_FILES HWOncillaBackend.h
               Synchronizer.h
@@ -22,14 +21,11 @@ set(HDR_FILES HWOncillaBackend.h
               nodes/SupervisorL4.h
               nodes/SupervisorTrunk.h
               nodes/SupervisorWorld.h
-              nodes/DeepCopyable.h
-              adapters/Adapters.h
-              adapters/BrushlessMotorPosition.h
-			  adapters/Servo.h)
+              nodes/DeepCopyable.h)
 
 add_library(oncilla-hw MODULE ${SRC_FILES} ${HDR_FILES})
 
-target_link_libraries(oncilla-hw ${DEPS_LIBRARIES})
+target_link_libraries(oncilla-hw ${DEPS_LIBRARIES} ${XENOMAI_NATIVE_LIBRARIES})
 
 install(TARGETS oncilla-hw DESTINATION lib)
 

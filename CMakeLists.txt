@@ -25,11 +25,19 @@ endif("${CMAKE_CXX_COMPILER}" MATCHES ".*clang.*")
 # Deps
 ################################################################################
 
-pkg_check_modules(DEPS REQUIRED liboncilla-0 robo-xeno-0.3)
+find_package(Xenomai REQUIRED)
+if(NOT XENOMAI_NATIVE_FOUND)
+  message(FATAL_ERROR "Could not found Xenomai native skin")
+endif(NOT XENOMAI_NATIVE_FOUND)
+
+pkg_check_modules(DEPS REQUIRED liboncilla-0 libsbcp-0 biorob-rbio-0.3)
 
 include_directories(${DEPS_INCLUDE_DIRS}
                     ${PROJECT_SOURCE_DIR}/src
-                    ${PROJECT_BINARY_DIR}/src)
+                    ${PROJECT_BINARY_DIR}/src
+                    ${XENOMAI_NATIVE_INCLUDE_DIRS})
+
+add_definitions(${XENOMAI_NATIVE_DEFINITIONS})
 
 ################################################################################
 # Source exploration
