@@ -1,4 +1,6 @@
-set(SRC_FILES HWOncillaBackend.cpp
+set(SRC_FILES xenomai-utils/NativeHolder.cpp
+              xenomai-utils/NativeError.cpp
+              HWOncillaBackend.cpp
               Synchronizer.cpp
               nodes/Trunk.cpp
               nodes/L0.cpp
@@ -10,7 +12,9 @@ set(SRC_FILES HWOncillaBackend.cpp
               nodes/DeepCopyable.cpp
 )
 
-set(HDR_FILES HWOncillaBackend.h
+set(HDR_FILES xenomai-utils/NativeHolder.h
+              xenomai-utils/NativeError.h
+              HWOncillaBackend.h
               Synchronizer.h
               Common.h
               nodes/Nodes.h

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <robo-xeno/module/ModuleLoader.h>
 
 #include <liboncilla/Synchronizer.h>
-#include <robo-xeno/rtio/Manager.h>
+
 
 
 namespace liboncilla {
@@ -18,8 +17,6 @@ namespace hw {
 		Synchronizer();
 		virtual ~Synchronizer();
 	
-		::rtio::Input::Ptr GetInput(const std::string & name);
-		::rtio::Output::Ptr GetOutput(const std::string & name);
 		
 		double lastProcessTimeStep() const;
 
@@ -32,17 +29,11 @@ namespace hw {
 		void WaitForProcessAsyncPrimpl();
 
 	private :
-		typedef std::tr1::shared_ptr<rtio::Manager> ManagerPtr;
-		typedef std::tr1::shared_ptr<rx::ModuleLoader> ModuleLoaderPtr;
 		void Init();
 
 		void InitRT();
 		void InitModules();
 
-		static ManagerPtr s_manager;
-		//member because holds the module, so we should avoid dlclose
-		//our object.
-		static ModuleLoaderPtr s_loader;
 
 		const static double TIMESTEP = 0.01;
 
