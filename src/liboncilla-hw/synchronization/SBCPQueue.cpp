@@ -10,8 +10,8 @@
 namespace liboncilla {
 namespace hw {
 
-SBCPQueue::SBCPQueue()
-	: Queue(0,true){
+SBCPQueue::SBCPQueue(unsigned int priority)
+	: Queue(priority,true){
 	// TODO Auto-generated constructor stub
 
 }

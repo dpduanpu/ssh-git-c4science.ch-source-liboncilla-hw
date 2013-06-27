@@ -18,7 +18,7 @@ namespace hw {
 
 class RBIOQueue : public Queue{
 public:
-	RBIOQueue();
+	RBIOQueue(unsigned int priority);
 	virtual ~RBIOQueue();
 
 	virtual void DownstreamData();

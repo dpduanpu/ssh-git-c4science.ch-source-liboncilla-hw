@@ -15,7 +15,7 @@ namespace hw {
 
 class SBCPQueue : public Queue {
 public:
-	SBCPQueue();
+	SBCPQueue(unsigned int priority);
 	virtual ~SBCPQueue();
 
 	virtual void DownstreamData();

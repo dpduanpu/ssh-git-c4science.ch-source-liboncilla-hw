@@ -18,11 +18,25 @@ public:
 	MainSection(const options::Section::Ptr & base);
 	virtual ~MainSection();
 
-	BCPP_ADD_OPTION(Priority,
+	BCPP_ADD_OPTION(MainPriority,
 	                "priority",
 	                unsigned int,
-	                50,
-	                "xenomai priority of the task, between 0 (lowest) and 99 (highest) = is the same priority than a standard linux thread.");
+	                70,
+	                "xenomai priority of the main task, between 0 (lowest) and 99 (highest) = is the same priority than a standard linux thread.");
+
+	BCPP_ADD_OPTION(SBCPPriority,
+	                "sbcp-priority",
+	                unsigned int,
+	                60,
+	                "xenomai priority of the sbcp I/O task, between 0 (lowest) and 99 (highest) = is the same priority than a standard linux thread.");
+
+	BCPP_ADD_OPTION(RBIOPriority,
+	                "rbio-priority",
+	                unsigned int,
+	                60,
+	                "xenomai priority of the rbio I/O task, between 0 (lowest) and 99 (highest) = is the same priority than a standard linux thread.");
+
+
 	BCPP_ADD_OPTION(Timestep,
 	                "timestep",
 	                unsigned int,

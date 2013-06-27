@@ -11,8 +11,8 @@
 namespace liboncilla {
 namespace hw {
 
-RBIOQueue::RBIOQueue()
-	: Queue(50,true)
+RBIOQueue::RBIOQueue(unsigned int priority)
+	: Queue(priority,true)
 	, d_nextDate(0){
 	ServoGenerator g;
 	g.LoadAllFiles();

@@ -61,6 +61,7 @@ namespace hw {
 		typedef std::vector<Queue*> ListOfQueue;
 		void Init();
 		void CheckConfig(const MainSection & config);
+		void CheckPriority(unsigned int p, const std::string & name);
 		void InitRT();
 		void InitModules();
 

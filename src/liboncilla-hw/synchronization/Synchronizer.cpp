@@ -17,7 +17,9 @@ namespace hw {
 Synchronizer::Synchronizer(const MainSection & config)
 	: rci::oncilla::Synchronizer("Oncilla HW Synchronizer")
 	, d_timestep(config.Timestep() * 1.0e-3)
-	, d_priority(config.Priority()){
+	, d_priority(config.MainPriority())
+	, d_sbcpQueue(config.SBCPPriority())
+	, d_rbioQueue(config.RBIOPriority()){
 	CheckConfig(config);
 	Init();
 }
@@ -40,6 +42,15 @@ void Synchronizer::InitRT() {
 	xeno_call(rt_task_shadow,NULL,NULL,d_priority, T_FPU);
 }
 
+void Synchronizer::CheckPriority(unsigned int p, const std::string & name) {
+	if(p > 99) {
+		std::ostringstream os;
+		os << "Unsupported " << name << " of " << p
+		   << " only value between 0 and 99 are supported";
+		throw std::runtime_error(os.str());
+	}
+}
+
 void Synchronizer::CheckConfig(const MainSection& config){
 	std::ostringstream os;
 	if(config.Timestep() < 2){
@@ -48,10 +59,9 @@ void Synchronizer::CheckConfig(const MainSection& config){
 		throw std::runtime_error(os.str());
 	}
 
-	if(config.Priority() > 99) {
-		os << "Unsupported priorityof " << config.Priority() << " only value between 0 and 99 are supported";
-		throw std::runtime_error(os.str());
-	}
+	CheckPriority(config.MainPriority(),"main priority");
+	CheckPriority(config.SBCPPriority(),"sbcp priority");
+	CheckPriority(config.RBIOPriority(),"rbio priority");
 }
 
 void Synchronizer::InitModules() {
