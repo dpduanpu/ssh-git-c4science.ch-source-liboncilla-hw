@@ -3,18 +3,16 @@
 
 #include <liboncilla/Synchronizer.h>
 
-
-
 namespace liboncilla {
 
 namespace hw {
-
+	class MainSection;
 
 	class Synchronizer : public rci::oncilla::Synchronizer {
 	public :
 		typedef boost::shared_ptr< ::liboncilla::hw::Synchronizer > Ptr;
 
-		Synchronizer();
+		Synchronizer(const MainSection & config);
 		virtual ~Synchronizer();
 	
 		
@@ -30,17 +28,17 @@ namespace hw {
 
 	private :
 		void Init();
-
+		void CheckConfig(const MainSection & config);
 		void InitRT();
 		void InitModules();
 
-
-		const static double TIMESTEP = 0.01;
 
 		unsigned long d_overruns;
 
 		bool d_firstStepped;
 
+		double d_timestep;
+		unsigned int d_priority;
 	};
 
 

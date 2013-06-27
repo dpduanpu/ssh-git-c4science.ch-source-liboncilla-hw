@@ -9,34 +9,35 @@
 #include <liboncilla-hw/nodes/DeepCopyable.h>
 #include <liboncilla-hw/xenomai-utils/Utils.h>
 
-
-
+#include <liboncilla-hw/config/Config.h>
 
 using namespace liboncilla::hw;
 
-Synchronizer::Synchronizer()
+Synchronizer::Synchronizer(const MainSection & config)
 	: rci::oncilla::Synchronizer("Oncilla HW Synchronizer")
-	, d_firstStepped(false){	
+	, d_firstStepped(false)
+	, d_timestep(config.Timestep() * 1.0e-3)
+	, d_priority(config.Priority()){
+	CheckConfig(config);
 	Init();
 }
 
 void Synchronizer::Init(){
+
 	InitRT();
 	InitModules();
 }
 
+
 void Synchronizer::InitRT() {
-	int res;
-	if (  ( res = mlockall(MCL_CURRENT | MCL_FUTURE)) != 0 ){
-		throw NativeError("Error while locking memory",res);
-	}
+
 
 	if (signal(SIGINT,&Synchronizer::SigHandler) == SIG_ERR ) {
 		throw NativeError("Could not install handler", errno);
 	}
 	
 	
-	xeno_call(rt_task_shadow,NULL,NULL,50, T_FPU);
+	xeno_call(rt_task_shadow,NULL,NULL,d_priority, T_FPU);
 }
 
 
@@ -53,7 +54,6 @@ void Synchronizer::SigHandler(int ){
 
 }
 
-
 void Synchronizer::calibrateIfNeeded() {
 
 }
@@ -62,13 +62,13 @@ double Synchronizer::lastProcessTimeStep() const {
 	if (!d_firstStepped) {
 		return 0.0;
 	}
-	return TIMESTEP * (d_overruns + 1);
+	return d_timestep * (d_overruns + 1);
 }
 
 
 void Synchronizer::ProcessAsyncPrimpl() {
 	if(!d_firstStepped){
-		xeno_call(rt_task_set_periodic,NULL,TM_NOW,1e9 * TIMESTEP);
+		xeno_call(rt_task_set_periodic,NULL,TM_NOW,1e9 * d_timestep);
 	}
 
 }

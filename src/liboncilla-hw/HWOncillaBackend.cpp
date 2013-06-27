@@ -1,7 +1,10 @@
 #include "HWOncillaBackend.h"
 
+#include <sys/mman.h>
+
 #include <liboncilla/nodes/Nodes.h>
 #include <liboncilla/nodes/SupervisorNodes.h>
+#include <liboncilla-hw/xenomai-utils/Utils.h>
 
 #include "liboncilla-hw/nodes/Nodes.h"
 
@@ -20,9 +23,22 @@ const char * HWOncillaBackend::ME2_SUFFIX = "_ME2";
 const char * HWOncillaBackend::ME3_SUFFIX = "_ME3";
 
 
-HWOncillaBackend::HWOncillaBackend()
-	: d_synchronizer(new loh::Synchronizer()){
+HWOncillaBackend::HWOncillaBackend(){
+	// first thing is to lock memory as soon as possible, so In the entry point
+	// of the module
+	LockMemory();
+	d_config.LoadAllFiles();
+	d_synchronizer = loh::Synchronizer::Ptr(new loh::Synchronizer(d_config.Main()));
 }
+
+
+void HWOncillaBackend::LockMemory() {
+	int res;
+	if (  ( res = mlockall(MCL_CURRENT | MCL_FUTURE)) != 0 ){
+		throw liboncilla::hw::NativeError("Error while locking memory",res);
+	}
+}
+
 
 HWOncillaBackend::~HWOncillaBackend(){
 }
@@ -48,7 +64,7 @@ HWOncillaBackend::CreateL1(rci::oncilla::Leg leg ,
 
 	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
 	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
-	if (isForeLeg(leg)) {
+	if (IsForeLeg(leg)) {
 		range = HW_RANGE_L1_FORE;
 	} else {
 		range = HW_RANGE_L1_HIND;
@@ -65,7 +81,7 @@ HWOncillaBackend::CreateL2(rci::oncilla::Leg leg ,
 
 	bool isReversed = NOT_REVERSED; // TODO: Set depending on left/right/whatever
 	unsigned int range; // Hardware range of the brushless motors - TODO: Which unit?
-	if (isForeLeg(leg)) {
+	if (IsForeLeg(leg)) {
 		range = HW_RANGE_L2_FORE;
 	} else {
 		range = HW_RANGE_L2_HIND;
@@ -102,10 +118,10 @@ boost::shared_ptr<rci::oncilla::SupervisorL4> HWOncillaBackend::CreateSupervisor
 	return ro::SupervisorL4::Ptr();
 }
 
-bool HWOncillaBackend::isLeftLeg(rci::oncilla::Leg l){
+bool HWOncillaBackend::IsLeftLeg(rci::oncilla::Leg l){
 	return (l == ro::LEFT_FORE || l == ro::LEFT_HIND);
 }
 
-bool HWOncillaBackend::isForeLeg(rci::oncilla::Leg l){
+bool HWOncillaBackend::IsForeLeg(rci::oncilla::Leg l){
 	return (l == ro::LEFT_FORE || l == ro::RIGHT_FORE);
 }

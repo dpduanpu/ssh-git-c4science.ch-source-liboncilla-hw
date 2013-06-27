@@ -3,6 +3,8 @@
 #include <liboncilla/utils/OncillaBackend.h>
 #include "Synchronizer.h"
 
+#include <liboncilla-hw/config/Config.h>
+
 /**
  * Liboncilla backend for the Oncilla hardware, providing all resource node
  * implementations connected to the hardware drivers.
@@ -49,7 +51,7 @@ private:
 	static const double ENCODER_RATIO_L2 = 1.0; // TODO: CHECK
 	static const double ENCODER_RATIO_L3 = 1.0; // TODO: CHECK
 
-	static const std::string & legPrefix(rci::oncilla::Leg l);
+	static const std::string & LegPrefix(rci::oncilla::Leg l);
 	static const char * L1_POSITION_SUFFIX;
 	static const char * L2_POSITION_SUFFIX;
 
@@ -57,10 +59,12 @@ private:
 	static const char * ME2_SUFFIX;
 	static const char * ME3_SUFFIX;
 
+	void LockMemory();
 
-	bool isLeftLeg(rci::oncilla::Leg);
+	bool IsLeftLeg(rci::oncilla::Leg);
 
-	bool isForeLeg(rci::oncilla::Leg);
+	bool IsForeLeg(rci::oncilla::Leg);
 
 	liboncilla::hw::Synchronizer::Ptr d_synchronizer;
+	liboncilla::hw::Config            d_config;
 };

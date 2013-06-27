@@ -1,5 +1,7 @@
 set(SRC_FILES xenomai-utils/NativeHolder.cpp
               xenomai-utils/NativeError.cpp
+              config/MainSection.cpp
+              config/Config.cpp
               HWOncillaBackend.cpp
               Synchronizer.cpp
               nodes/Trunk.cpp
@@ -14,6 +16,8 @@ set(SRC_FILES xenomai-utils/NativeHolder.cpp
 
 set(HDR_FILES xenomai-utils/NativeHolder.h
               xenomai-utils/NativeError.h
+              config/MainSection.h
+              config/Config.h
               HWOncillaBackend.h
               Synchronizer.h
               Common.h
