@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <errno.h>
 
-#include "Common.h"
+
 #include <liboncilla-hw/nodes/DeepCopyable.h>
 #include <liboncilla-hw/xenomai-utils/Utils.h>
 
@@ -70,14 +70,18 @@ void Synchronizer::ProcessAsyncPrimpl() {
 	if(!d_firstStepped){
 		xeno_call(rt_task_set_periodic,NULL,TM_NOW,1e9 * d_timestep);
 	}
-
+	/// \todo start sending orders
 }
 
 void Synchronizer::WaitForProcessAsyncPrimpl(){
 	int res;
 
+	/// \todo : change this to become wait at least one period, until the
+	///         critical loop is really finished.
+
 	res = rt_task_wait_period(&d_overruns);
 	if (res != 0 && res != -ETIMEDOUT ) {
 		xeno_throw_error_from(rt_task_wait_period,res);
 	}
+
 }

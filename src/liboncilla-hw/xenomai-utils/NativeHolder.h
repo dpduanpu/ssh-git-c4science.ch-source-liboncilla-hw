@@ -13,6 +13,10 @@
 #include <native/mutex.h>
 #include <native/event.h>
 
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+
 namespace liboncilla {
 namespace hw {
 
@@ -22,15 +26,24 @@ class NativeDestructor {
 public :
 	typedef int (*DeleterFptr)(T *);
 
-	NativeDestructor(DeleterFptr fptr) : d_fptr(fptr){};
+	NativeDestructor(DeleterFptr fptr,const char * name) : d_fptr(fptr), d_name (name){};
 
 	void operator()(T * p){
-		(*d_fptr)(p);
+		int res = (*d_fptr)(p);
+		if(res) {
+			std::cerr << "Got error on xenomai " << d_name << " " << p
+			          << " destruction. Code "
+			          << -res << " : " << strerror(-res) << std::endl;
+#ifndef NDEBUG
+			exit(255);
+#endif
+		}
 		delete p;
 	}
 
 private :
 	DeleterFptr d_fptr;
+	const char * d_name;
 };
 
 template <typename T>
@@ -39,40 +52,26 @@ public :
 	typedef typename NativeDestructor<T>::DeleterFptr DeleterFptr;
 	NativeHolder() : std::tr1::shared_ptr<T>(){}
 
-	NativeHolder(T *t, DeleterFptr p)
-		: std::tr1::shared_ptr<T>(t,NativeDestructor<T>(p)) {}
+	NativeHolder(T *t, DeleterFptr p,const char * name = "unnammed")
+		: std::tr1::shared_ptr<T>(t,NativeDestructor<T>(p,name)) {}
 
 };
 
+#define SPECIALIZE_FOR(rt_object, deleter ) \
+	template <> \
+	class NativeHolder<rt_object> : public std::tr1::shared_ptr<rt_object> { \
+	public : \
+		NativeHolder() : std::tr1::shared_ptr<rt_object>(){} \
+		NativeHolder(rt_object * t) \
+			: std::tr1::shared_ptr<rt_object>(t,NativeDestructor<rt_object>( deleter, #rt_object)) {}\
+	}
 
-template <>
-class NativeHolder<RT_TASK> : public std::tr1::shared_ptr<RT_TASK> {
-public :
-	NativeHolder() : std::tr1::shared_ptr<RT_TASK>(){}
+SPECIALIZE_FOR(RT_TASK,rt_task_delete);
+SPECIALIZE_FOR(RT_MUTEX,rt_mutex_delete);
+SPECIALIZE_FOR(RT_EVENT,rt_event_delete);
 
-	NativeHolder(RT_TASK *t)
-		: std::tr1::shared_ptr<RT_TASK>(t,NativeDestructor<RT_TASK>(rt_task_delete)) {}
 
-};
+#undef SPECIALIZE_FOR
 
-template <>
-class NativeHolder<RT_MUTEX> : public std::tr1::shared_ptr<RT_MUTEX> {
-public :
-	NativeHolder() : std::tr1::shared_ptr<RT_MUTEX>(){}
-
-	NativeHolder(RT_MUTEX *t)
-		: std::tr1::shared_ptr<RT_MUTEX>(t,NativeDestructor<RT_MUTEX>(rt_mutex_delete)) {}
-
-};
-
-template <>
-class NativeHolder<RT_EVENT> : public std::tr1::shared_ptr<RT_EVENT> {
-public :
-	NativeHolder() : std::tr1::shared_ptr<RT_EVENT>(){}
-
-	NativeHolder(RT_EVENT *t)
-		: std::tr1::shared_ptr<RT_EVENT>(t,NativeDestructor<RT_EVENT>(rt_event_delete)) {}
-
-};
 } /* namespace hw */
 } /* namespace liboncilla */

@@ -16,7 +16,8 @@ namespace hw {
 
 NativeError::NativeError(const std::string& whatStr , int error){
 	std::ostringstream os;
-	os << whatStr << ". Code : " << error << " : " << strerror(error);
+	os << whatStr << ". Code " << error
+	   << " : " << strerror(error);
 	d_what = os.str();
 }
 

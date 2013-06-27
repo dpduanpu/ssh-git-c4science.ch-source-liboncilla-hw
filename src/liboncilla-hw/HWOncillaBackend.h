@@ -1,9 +1,9 @@
 #pragma once
 
 #include <liboncilla/utils/OncillaBackend.h>
-#include "Synchronizer.h"
 
 #include <liboncilla-hw/config/Config.h>
+#include <liboncilla-hw/synchronization/Synchronizer.h>
 
 /**
  * Liboncilla backend for the Oncilla hardware, providing all resource node
