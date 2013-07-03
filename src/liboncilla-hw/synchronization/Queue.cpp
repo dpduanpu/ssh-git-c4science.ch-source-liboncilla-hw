@@ -17,6 +17,7 @@ namespace hw {
 
 unsigned int Queue::s_nbQueues(0);
 const unsigned int Queue::MaxNbQueues(8 * sizeof(unsigned long));
+const char * Queue::EventName = "liboncilla-hw synchronization event";
 
 Queue::Queue(unsigned int priority,bool preferNonRt)
 	: d_id(s_nbQueues++)
@@ -81,7 +82,6 @@ void Queue::Loop() {
 		}
 
 		PerformIO();
-
 		xeno_call(rt_event_clear,&e,Mask(),&mask);
 	}
 

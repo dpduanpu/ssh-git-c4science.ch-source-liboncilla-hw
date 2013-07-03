@@ -20,6 +20,9 @@ Synchronizer::Synchronizer(const MainSection & config)
 	, d_rbioQueue(config.RBIOPriority()){
 	CheckConfig(config);
 	Init();
+	//TODO bad bad pratice new queue should be added automatically to this list.
+	d_queues.push_back(&d_sbcpQueue);
+	d_queues.push_back(&d_rbioQueue);
 }
 
 void Synchronizer::Init(){
@@ -31,12 +34,6 @@ void Synchronizer::Init(){
 
 void Synchronizer::InitRT() {
 
-
-	if (signal(SIGINT,&Synchronizer::SigHandler) == SIG_ERR ) {
-		throw NativeError("Could not install handler", errno);
-	}
-	
-	
 	xeno_call(rt_task_shadow,NULL,NULL,d_priority, T_FPU);
 }
 
@@ -68,11 +65,8 @@ void Synchronizer::InitModules() {
 
 
 Synchronizer::~Synchronizer(){
-	SigHandler(0);
 }
 
-void Synchronizer::SigHandler(int ){
-}
 
 void Synchronizer::calibrateIfNeeded() {
 
@@ -114,7 +108,7 @@ bool Synchronizer::stop() {
 }
 
 double Synchronizer::lastProcessTimeStep() const {
-	if (d_firstStepped) {
+	if (!d_firstStepped) {
 		return 0.0;
 	}
 	return d_timestep * (d_overruns + 1);
