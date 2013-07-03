@@ -1,6 +1,7 @@
 set(SRC_FILES xenomai-utils/NativeHolder.cpp
               xenomai-utils/NativeError.cpp
               config/MainSection.cpp
+              config/MotorSection.cpp
               config/Config.cpp
               synchronization/Synchronizer.cpp
               synchronization/Queue.cpp
@@ -21,6 +22,7 @@ set(SRC_FILES xenomai-utils/NativeHolder.cpp
 set(HDR_FILES xenomai-utils/NativeHolder.h
               xenomai-utils/NativeError.h
               config/MainSection.h
+              config/MotorSection.h
               config/Config.h
               synchronization/Synchronizer.h
               synchronization/Queue.h
