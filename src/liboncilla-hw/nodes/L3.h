@@ -20,6 +20,12 @@ public:
 
 	virtual void deepCopyResources();
 
+	void updateJointPositionHardwareCoordinates(int magneticEncoderVal, int magneticEncoderStatus);
+
+private:
+	double d_hwUpJointAngle, d_userUpJointAngle; // upstream joint angles
+	int d_magneticEncoderVal, d_magneticEncoderStatus;
+
 };
 
 } /* namespace hw */

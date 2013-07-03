@@ -27,6 +27,22 @@ public:
 	virtual void deepCopyResources();
 
 	void unsafeUpdateJointPosition(unsigned int index,double value);
+
+	void setMaxMotorEncoderVal(double Val);
+	void setIsHip(bool Val);
+	void setIsReversed(bool Val);
+
+	void initialize(bool isReversed, bool isHip, double maxMotorEncoderVal);
+
+	double getJointPositionHardwareCoordinates(); // The next 3 functions should not be public, but friends of the SBCPQueue...
+	void updateJointPositionHardwareCoordinates(int magneticEncoderVal, int magneticEncoderStatus, int motorEncoderVal);
+
+private:
+	bool d_isHip, d_isReversed;
+	double d_maxMotorEncoderVal;
+	double d_userDownJointAngle, d_userUpJointAngle;
+	double d_hwDownJointAngle, d_hwUpJointAngle; // Down means downstream and Up means upstream
+	int d_magneticEncoderVal, d_magneticEncoderStatus, d_motorEncoderVal;
 };
 
 } /* namespace hw */

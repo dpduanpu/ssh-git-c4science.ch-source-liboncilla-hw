@@ -49,6 +49,7 @@ private:
 	L1ByNode d_l1ByNode;
 	L2ByNode d_l2ByNode;
 	L3ByNode d_l3ByNode;
+
 	MotordriverByLeg d_motordriverByLeg;
 };
 

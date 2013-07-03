@@ -13,7 +13,17 @@ L3::~L3(){
 }
 
 JointAnglesPtr L3::getJointPosition() const{
-	NOT_IMPLEMENTED_STUB(L3, getJointPosition);
+	double sign = 1, offset = 0; // TODO: BUT THIS SHOULD BE CHANGED
+	d_userUpJointAngle = sign * (d_hwUpJointAngle + offset) / 4096.0 * (2 * M_PI);
+	rci::JointAnglesPrt result = rci::JointAngles::fromRad(d_userUpJointAngle);
+	return result;
+}
+
+void L3::updateJointPositionHardwareCoordinates(int magneticEncoderVal, int magneticEncoderStatus){
+	d_magneticEncoderVal = magneticEncoderVal;
+	d_magneticEncoderStatus = magneticEncoderStatus;
+
+	d_hwUpJointAngle = d_magneticEncoderVal;
 }
 
 void L3::deepCopyResources(){

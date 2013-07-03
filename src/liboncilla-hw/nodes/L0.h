@@ -13,11 +13,15 @@ public:
     L0(const std::string & name);
     virtual ~L0();
 
-    virtual rci::ForcesPtr getForces() const {
-        NOT_IMPLEMENTED_STUB(L0, getForces);
-    }
+    virtual rci::ForcesPtr getForces() const;
 
 	virtual void deepCopyResources();
+
+	void updateForcesHardwareCoordinates(int force1, int force2, int force3); // I am not sure if type = int should be type = Data or not...
+
+private:
+	int d_hwUpForce1, d_hwUpForce2, d_hwUpForce3;
+	rci::ForcesPtr d_userUpForces;
 
 };
 
