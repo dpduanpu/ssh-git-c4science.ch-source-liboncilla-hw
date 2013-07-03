@@ -21,6 +21,9 @@ class Queue {
 public:
 	const static char * EventName;
 	static unsigned long AllQueueMask();
+	/**
+	 * /param preferNonRt: use callbacks which are not supposed to run on the realtime Kernel (default: true)
+	 */
 	Queue(unsigned int priority,bool preferNonRt);
 	virtual ~Queue();
 

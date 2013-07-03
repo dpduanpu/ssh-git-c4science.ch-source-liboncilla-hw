@@ -24,7 +24,7 @@ Queue::Queue(unsigned int priority,bool preferNonRt)
 	, d_priority(priority){
 	if(s_nbQueues > MaxNbQueues) {
 		std::ostringstream os;
-		os << "Cannot alloacte Queue, maximum allowed : " << MaxNbQueues;
+		os << "Cannot allocate Queue, maximum allowed : " << MaxNbQueues;
 		throw std::runtime_error(os.str());
 	}
 
