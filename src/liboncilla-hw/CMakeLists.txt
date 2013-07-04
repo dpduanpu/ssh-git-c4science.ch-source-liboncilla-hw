@@ -38,10 +38,19 @@ set(HDR_FILES xenomai-utils/NativeHolder.h
               nodes/SupervisorWorld.h)
 
 add_library(oncilla-hw MODULE ${SRC_FILES} ${HDR_FILES})
+set_target_properties(oncilla-hw PROPERTIES LINK_FLAGS "-Wl,-unresolved-symbols=ignore-in-shared-libs")
+
+#add_library(oncilla-hw-shared SHARED ${SRC_FILES} ${HDR_FILES})
 
 target_link_libraries(oncilla-hw ${DEPS_LIBRARIES} ${XENOMAI_NATIVE_LIBRARIES})
+#target_link_libraries(oncilla-hw-shared ${DEPS_LIBRARIES} ${XENOMAI_NATIVE_LIBRARIES})
 
 install(TARGETS oncilla-hw DESTINATION lib)
+
+#add_check_test(NAME liboncilla-hw-no-undef-sym
+#               FILES liboncilla-hw-no-undef-sym-test.cpp
+#			   LIBRARIES oncilla-hw-shared)
+
 
 # We don't install headers, because no-one should implement against the
 # hw backend, but against liboncilla instead.
