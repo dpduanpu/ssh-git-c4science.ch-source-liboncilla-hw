@@ -109,7 +109,8 @@ void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
 
 	node->initialize(isRightLeg,
 	                 isHip, 
-	                 fi->second->Motor1().PositionLimit().Get());
+	                 fi->second->Motor1().PositionLimit().Get() & 0x7fff,
+	                 fi->second->Motor1().PresentPosition().Get());
 
 	//todo hardcoded mapping, could be configurable
 	MotorAndEncoder m1;
@@ -132,7 +133,8 @@ void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node){
 
 	node->initialize(isRightLeg,
 	                 isHip, 
-	                 fi->second->Motor2().PositionLimit().Get());
+	                 fi->second->Motor2().PositionLimit().Get() & 0x7fff,
+	                 fi->second->Motor2().PresentPosition().Get());
 
 	//todo hardcoded mapping, could be configurable
 	MotorAndEncoder m2;

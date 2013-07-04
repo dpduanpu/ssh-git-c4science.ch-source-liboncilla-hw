@@ -23,15 +23,19 @@ public:
 	
 	void unsafeUpdateJointPosition(unsigned int index,double value);
 
-	void initialize(bool isReversed, bool isHip, double maxMotorEncoderVal);
+	void initialize(bool isReversed, 
+	                bool isHip, 
+	                int16_t motorPositionLimit, 
+	                int16_t motorCurrentPosition);
 
 	double nodeToQueueJointPosition(); // The next function should not be public, but friends of the SBCPQueue...
-	void queueToNodeJointPosition(int magneticEncoderVal, int magneticEncoderStatus, int motorEncoderVal);
+	void queueToNodeJointPosition(int16_t magneticEncoderVal,
+	                              int16_t magneticEncoderStatus, 
+	                              int16_t motorEncoderVal);
 
 private:
 	bool d_isHip, d_isReversed;
-	double d_maxMotorEncoderVal;
-	int d_magneticEncoderVal, d_magneticEncoderStatus, d_motorEncoderVal;
+	double d_motorPositionLimit;
 };
 
 } /* namespace hw */
