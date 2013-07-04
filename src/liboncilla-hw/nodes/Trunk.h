@@ -2,16 +2,15 @@
 
 #include <liboncilla/nodes/Trunk.h>
 
-#include "liboncilla-hw/Common.h"
-#include "liboncilla-hw/nodes/DeepCopyable.h"
+#include <liboncilla-hw/Common.h>
+
 
 namespace liboncilla {
 namespace hw {
 
 using namespace rci;
 
-class Trunk : public rci::oncilla::Trunk ,
-              public DeepCopyable {
+class Trunk : public rci::oncilla::Trunk {
 public:
 	typedef boost::shared_ptr<Trunk> Ptr;
 	Trunk();
@@ -20,7 +19,6 @@ public:
 	virtual TranslationalAccelerationPtr getTranslationalAcceleration() const;
 	virtual OrientationPtr getOrientation() const;
 
-	virtual void deepCopyResources();
 };
 
 } /* namespace hw */
