@@ -12,18 +12,18 @@
 namespace liboncilla {
 namespace hw {
 
-SBCPQueue::SBCPQueue(unsigned int priority)
-	: Queue(priority,true){
+SBCPQueue::SBCPQueue(const Config & config)
+	: Queue(config.Main().SBCPPriority(),true){
 	
-	sbcp::Config config;
-	config.LoadAllFiles();
+	sbcp::Config sbcpConfig;
+	sbcpConfig.LoadAllFiles();
 
 	// create links to the 4 motorboards
 	unsigned int requiredFrameSize = 4; //(=4 consecutive packets send at once from roboard to master communication board)
 	// create links to the 4 motorboards
 	unsigned int requiredPacketSize = 32; //(Size of the biggest packet you will send, the actual maximum might be higher)
 
-	std::tr1::shared_ptr<sbcp::Bus> d_bus = config.OpenDefaultBusWithFrame(requiredFrameSize,requiredPacketSize);	
+	std::tr1::shared_ptr<sbcp::Bus> d_bus = sbcpConfig.OpenDefaultBusWithFrame(requiredFrameSize,requiredPacketSize);	
 
 
 
