@@ -30,7 +30,8 @@ if(NOT XENOMAI_NATIVE_FOUND)
   message(FATAL_ERROR "Could not found Xenomai native skin")
 endif(NOT XENOMAI_NATIVE_FOUND)
 
-pkg_check_modules(DEPS REQUIRED liboncilla-0 libsbcp-0 biorob-rbio-0.3)
+
+pkg_check_modules(DEPS REQUIRED libsbcp-0 biorob-rbio-0.3 liboncilla-0)
 
 include_directories(${DEPS_INCLUDE_DIRS}
                     ${PROJECT_SOURCE_DIR}/src
@@ -38,6 +39,9 @@ include_directories(${DEPS_INCLUDE_DIRS}
                     ${XENOMAI_NATIVE_INCLUDE_DIRS})
 
 add_definitions(${XENOMAI_NATIVE_DEFINITIONS})
+
+enable_testing()
+enable_make_check()
 
 ################################################################################
 # Source exploration
