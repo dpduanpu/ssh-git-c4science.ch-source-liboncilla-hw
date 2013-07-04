@@ -10,12 +10,9 @@
 #include "Queue.h"
 #include <liboncilla-hw/nodes/Nodes.h>
 
-#include <libsbcp/utils/Config.h>
+#include <libsbcp/bus/Bus.h>
 #include <libsbcp/devices/amarsi/MotorDriver.h>
 
-#include <libsbcp/bus/Bus.h>
-#include <libsbcp/devices/motordriver_board/MotorDriver.h>
-#include <sbcpd/si/ft2232h.h>
 
 namespace liboncilla {
 namespace hw {
@@ -37,20 +34,26 @@ public:
 
 private:
 	//std::tr1::shared_ptr<sbcp::amarsi::MotorDriver> d_motordrivers[4];
-	
-	typedef std::map<rci::oncilla::Leg, L0::Ptr> L0NodeByLeg;
-	typedef std::map<rci::oncilla::Leg, L1::Ptr> L1NodeByLeg;
-	typedef std::map<rci::oncilla::Leg, L2::Ptr> L2NodeByLeg;
-	typedef std::map<rci::oncilla::Leg, L3::Ptr> L3NodeByLeg;
-	
-	typedef std::map<rci::oncilla::Leg, sbcp::amarsi::MotorDriver::Ptr> MotordriverByLeg;
-	
-	L0ByNode d_l0ByNode;
-	L1ByNode d_l1ByNode;
-	L2ByNode d_l2ByNode;
-	L3ByNode d_l3ByNode;
 
-	MotordriverByLeg d_motordriverByLeg;
+	typedef std::map<liboncilla::hw::L0::Ptr, sbcp::amarsi::MotorDriver::Ptr > MotorDriverByL0;
+
+	struct MotorAndEncoder{
+		sbcp::amarsi::MotorDriver::Motor           * motor;
+		sbcp::amarsi::MotorDriver::MagneticEncoder * encoder;
+	};
+
+	typedef std::map<liboncilla::hw::L1L2::Ptr, MotorAndEncoder > MotorAndEncoderByL1L2;
+	typedef std::map<liboncilla::hw::L3::Ptr , sbcp::amarsi::MotorDriver::MagneticEncoder *> MagneticEncoderByL3;
+
+	typedef std::map<rci::oncilla::Leg, sbcp::amarsi::MotorDriver::Ptr> MotordriverByLeg;
+
+	MotorDriverByL0       d_mdvByL0;
+	MotorAndEncoderByL1L2 d_motAndEncByL1L2;
+	MagneticEncoderByL3   d_encByL3;
+
+	MotordriverByLeg d_motordrivers;
+
+	std::tr1::shared_ptr<sbcp::Bus> d_bus;
 };
 
 } /* namespace hw */

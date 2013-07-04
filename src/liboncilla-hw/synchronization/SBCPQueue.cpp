@@ -7,61 +7,79 @@
 
 #include "SBCPQueue.h"
 
+#include <libsbcp/utils/Config.h>
+
 namespace liboncilla {
 namespace hw {
 
 SBCPQueue::SBCPQueue(unsigned int priority)
 	: Queue(priority,true){
+	
+	sbcp::Config config;
+	config.LoadAllFiles();
+
 	// create links to the 4 motorboards
 	unsigned int requiredFrameSize = 4; //(=4 consecutive packets send at once from roboard to master communication board)
 	// create links to the 4 motorboards
 	unsigned int requiredPacketSize = 32; //(Size of the biggest packet you will send, the actual maximum might be higher)
-	std::tr1::shared_ptr<Bus> sbcpbus = OpenDefaultBusWithFrame(requiredFrameSize, requiredPacketSize);
-	
 
+	std::tr1::shared_ptr<sbcp::Bus> d_bus = config.OpenDefaultBusWithFrame(requiredFrameSize,requiredPacketSize);	
+
+
+
+	
 	//TODO: do this config-file-wise
-	d_motordriverByLeg[rci::oncilla::LEFT_FORE] = sbcpbus->OpenDevice(0x01);
-	d_motordriverByLeg[rci::oncilla::RIGHT_FORE] = sbcpbus->OpenDevice(0x02);
-	d_motordriverByLeg[rci::oncilla::LEFT_HIND] = sbcpbus->OpenDevice(0x03);
-	d_motordriverByLeg[rci::oncilla::RIGHT_HIND] = sbcpbus->OpenDevice(0x04);
+	d_motordrivers[rci::oncilla::LEFT_FORE]  = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x01);
+	d_motordrivers[rci::oncilla::RIGHT_FORE] = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x02);
+	d_motordrivers[rci::oncilla::LEFT_HIND]  = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x03);
+	d_motordrivers[rci::oncilla::RIGHT_HIND] = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x04);
 }
 
 SBCPQueue::~SBCPQueue(){
-	// TODO Auto-generated destructor stub
 }
 
 void SBCPQueue::DownstreamData(){
-	for(Motordriver::const_iterator i = d_motordriverByLeg.begin();
-	    i != d_motordriverByLeg.end();
-	    ++i){
-		i->second->Motor1()->GoalPosition()->Set(L1NodeByLeg[i->first]->nodeToQueueJointPosition());//double
-		i->second->Motor2()->GoalPosition()->Set(L2NodeByLeg[i->first]->nodeToQueueJointPosition());//double
+
+	for(MotorAndEncoderByL1L2::const_iterator motAndEnc = d_motAndEncByL1L2.begin();
+	    motAndEnc != d_motAndEncByL1L2.end();
+	    ++motAndEnc) { 
+		motAndEnc->second.motor->GoalPosition().Set(motAndEnc->first->nodeToQueueJointPosition());
 	}
+
+
 }
 
 void SBCPQueue::UpstreamData(){
-	for(Motordriver::const_iterator i = d_motordriverByLeg.begin();	i != d_motordriverByLeg.end(); ++i){
-		// TODO: actually, one of those is a torque		
-		d_l0NodeByLeg[i->first]->queueToNodeForces(i->second->Force(0),i->second->Force(1),i->second->Force(2) );
-
-		d_l1NodeByLeg[i->first]->queueToNodeJointPosition(
-			i->second->Q1()->PositionAndStatus()->Get() & 0x3fff ,
-			(i->second->Q1()->PositionAndStatus()->Get() & 0xc000) >> 14,
-			i->second->Motor1()->PresentPosition()->Get());
-		
-		d_l2NodeByLeg[i->first]->queueToNodeJointPosition(
-			i->second->Q2()->PositionAndStatus()->Get() & 0x3fff ,
-			(i->second->Q2()->PositionAndStatus()->Get() & 0xc000) >> 14,
-			i->second->Motor2()->PresentPosition()->Get());
-		
-		d_l3NodeByLeg[i->first]->queueToNodeJointPosition(
-			i->second->Q3()->PositionAndStatus()->Get() & 0x3fff ,
-			(i->second->Q3()->PositionAndStatus()->Get() & 0xc000) >> 14);
+	for(MotorAndEncoderByL1L2::const_iterator motAndEnc = d_motAndEncByL1L2.begin();
+	    motAndEnc != d_motAndEncByL1L2.end();
+	    ++motAndEnc) { 
+		uint16_t pos(motAndEnc->second.encoder->PositionAndStatus().Get() & 0x3fff);
+		uint16_t status((motAndEnc->second.encoder->PositionAndStatus().Get() & 0xc000) >> 14);
+		int16_t  motPos(motAndEnc->second.motor->PresentPosition().Get() );
+		motAndEnc->first->queueToNodeJointPosition(pos,status,motPos);
 	}
+
+	for(MotorDriverByL0::const_iterator mdv = d_mdvByL0.begin();
+	    mdv != d_mdvByL0.end();
+	    ++mdv) {
+		mdv->first->queueToNodeForces(mdv->second->Force(0).Get(),
+		                              mdv->second->Force(1).Get(),
+		                              mdv->second->Force(2).Get() );
+	}
+	    
+	for(MagneticEncoderByL3::const_iterator enc = d_encByL3.begin();
+	    enc != d_encByL3.end();
+	    ++enc) {
+
+		enc->first->queueToNodeJointPosition(enc->second->PositionAndStatus().Get() & 0x3fff ,
+		                                     (enc->second->PositionAndStatus().Get() & 0xc000) >> 14);
+
+	}
+
 }
 
 void SBCPQueue::PerformIO(){
-	// nothing to do
+	// TODO : perform the IO
 }
 
 void SBCPQueue::InitializeIO(){
@@ -70,44 +88,70 @@ void SBCPQueue::InitializeIO(){
 
 void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node){
 	// check if this map contains this leg
-	Motordriver::const_iterator fi = d_motordriverByLeg.find(l);
-	if(fi == d_motordriverByLeg.end()){ 
-		throw(std::runtime_error("Failed to open motordriver earlier, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
+	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
+	if(fi == d_motordrivers.end()){ 
+		throw(std::runtime_error("Failed to open motordriver, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
 	}
-	d_l0ByNode[node] = fi->second;
+	
+	d_mdvByL0[node] = fi->second;
+
+
 }
 
 void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
-	bool isLeftLeg = ((l == rci::oncilla::LEFT_FORE) || (l == rci::oncilla::LEFT_HIND))? true: false;
-	
+	bool isRightLeg = ((l == rci::oncilla::RIGHT_FORE) || (l == rci::oncilla::RIGHT_HIND))? true: false;
+	bool isHip = true;
 	//check if this map contains this leg
-	Motordriver::const_iterator fi = d_motordriverByLeg.find(l);
-	if(fi == d_motordriverByLeg.end()){ 
+	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
+	if(fi == d_motordrivers.end()){ 
 		throw(std::runtime_error("Failed to open motordriver earlier, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
 	}
-	d_l1ByNode[node] = fi->second;
-	d_l1ByNode[node]->initialize(!isLeftLeg, true, fi->first->Motor1()->PositionLimit()->Get());
+
+	node->initialize(isRightLeg,
+	                 isHip, 
+	                 fi->second->Motor1().PositionLimit().Get());
+
+	//todo hardcoded mapping, could be configurable
+	MotorAndEncoder m1;
+	m1.motor   = &(fi->second->Motor1());
+	m1.encoder = &(fi->second->Q1());
+
+	d_motAndEncByL1L2[node] = m1;
+   
 }
 
 void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node){
-	bool isLeftLeg = ((l == rci::oncilla::LEFT_FORE) || (l == rci::oncilla::LEFT_HIND))? true: false;
-	
+	bool isRightLeg = ((l == rci::oncilla::RIGHT_FORE) || (l == rci::oncilla::RIGHT_HIND))? true: false;
+
+	bool isHip = false;
 	//check if this map contains this leg
-	Motordriver::const_iterator fi = d_motordriverByLeg.find(l);
-	if(fi == d_motordriverByLeg.end()){ 
+	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
+	if(fi == d_motordrivers.end()){ 
 		throw(std::runtime_error("Failed to open motordriver earlier, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
 	}
-	d_l2ByNode[node] = fi->second;
-	d_l2ByNode[node]->initialize(!isLeftLeg, false, fi->first->Motor2()->PositionLimit()->Get());
+
+	node->initialize(isRightLeg,
+	                 isHip, 
+	                 fi->second->Motor2().PositionLimit().Get());
+
+	//todo hardcoded mapping, could be configurable
+	MotorAndEncoder m2;
+	m2.motor   = &(fi->second->Motor2());
+	m2.encoder = &(fi->second->Q2());
+
+	d_motAndEncByL1L2[node] = m2;
+	
 }
 
 void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node){
 	//check if this map contains this leg
-	Motordriver::const_iterator fi = d_motordriverByLeg.find(l);
-	if(fi == d_motordriverByLeg.end()){ 
-		throw(std::runtime_error("Failed to open motordriver earlier, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
+	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
+	if(fi == d_motordrivers.end()){ 
+		throw(std::runtime_error("Failed to open motordriver, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
 	}
-	d_l3ByNode[node] = fi->second;
+	
+	d_encByL3[node] = &(fi->second->Q3());
+	
 }
 
 } /* namespace hw */

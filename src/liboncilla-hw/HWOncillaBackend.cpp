@@ -51,13 +51,13 @@ boost::shared_ptr<rci::oncilla::L0>
 HWOncillaBackend::CreateL0(rci::oncilla::Leg leg ,
                            const std::string& name){
 
-	ro::L0::Ptr node(new loh::L0(name));
+	loh::L0::Ptr node(new loh::L0(name));
 
 	loh::Synchronizer::RegistrationAccessor::RegisterL0(*d_synchronizer,
 	                                                    leg,
 	                                                    node);
 
-	return node;
+	return boost::static_pointer_cast<ro::L0,loh::L0>(node);
 }
 
 boost::shared_ptr<rci::oncilla::L1L2> 

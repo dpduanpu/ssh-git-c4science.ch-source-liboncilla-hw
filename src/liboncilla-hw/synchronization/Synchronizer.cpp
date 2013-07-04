@@ -1,6 +1,4 @@
 #include "Synchronizer.h"
-
-
 #include <sys/mman.h>
 #include <signal.h>
 #include <errno.h>
