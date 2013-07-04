@@ -59,6 +59,15 @@ MotorDriverGroup::MotorDriverGroup(options::Section::Ptr s)
 
 MotorDriverGroup::~MotorDriverGroup(){}
 
+MotorSection::MotorSection(options::Section::Ptr  s)
+	: options::ConfigSection(s)
+	, d_shParams(Section())
+	, d_shDevices(Section()) {
+}
+
+MotorSection::~MotorSection(){
+}
+
 } // namespace hw
 } // namespace liboncilla
 
