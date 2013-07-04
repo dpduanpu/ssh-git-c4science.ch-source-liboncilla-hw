@@ -15,24 +15,10 @@ L1L2::~L1L2(){
 }
 
 void L1L2::initialize(bool isReversed, bool isHip, double maxMotorEncoderVal){
-	setIsReversed(isReversed);
-	setIsHip(isHip);
-	setMaxMotorEncoderVal(maxMotorEncoderVal);
-
-	if(d_isHip){
-		d_hwDownJointAngles = d_maxMotorEncoderVal / 2.0;
-	}
-	else{
-		d_hwDownJointAngles = d_isReversed? d_maxMotorEncoderVal: 0;
-	}
-}
-
-void L1L2::setMaxMotorEncoderVal(double Val){
-	d_MaxMotorEncoderVal = Val;
-}
-
-void L1L2::setIsHip(bool Val){
-	d_isHip = Val;
+	d_isReversed = isReversed;
+	d_isHip = isHip;
+	d_MaxMotorEncoderVal = maxMotorEncoderVal;
+	setJointPosition({0.0});
 }
 
 void L1L2::setControlMode(ControlModePtr controlMode){
@@ -43,24 +29,18 @@ bool L1L2::setJointImpedance(JointImpedancePtr){
 	NOT_IMPLEMENTED_STUB(L1L2, setJointImpedance);
 }
 
-bool L1L2::setJointPosition(JointAnglesPtr position){
-	if(!JointAnglesPtr)
-		return false;
-
-	d_userDownJointAngle = position->rad();
-
+double L1L2::nodeToQueueJointPosition(){
+	//This is what the node sends this queue
+	double userDownJointAngle = getLastPositionCommand()->rad()
+	double hwDownJointAngle;
 	// do the conversion, set the result
 	if(d_isHip){
-		d_hwDownJointAngle = (d_isReversed? -1: 1) * d_userDownJointAngle / (2.0 * M_PI) * 4096.0 + d_maxMotorEncoderVal / 2.0;
+		hwDownJointAngle = (d_isReversed? -1: 1) * userDownJointAngle / (2.0 * M_PI) * 4096.0 + d_maxMotorEncoderVal / 2.0;
 	}	
 	else{
-		d_hwDownJointAngle = d_isReversed? (maxMotorEncoderVal - userDownJointAngle * maxMotorEncoderVal): (userDownJointAngle * maxMotorEncoderVal);
+		hwDownJointAngle = d_isReversed? (maxMotorEncoderVal - userDownJointAngle * maxMotorEncoderVal): (userDownJointAngle * maxMotorEncoderVal);
 	}
-	return true;
-}
-
-double L1L2::getJointPositionHardwareCoordinates(){
-	return d_hwDownJointAngles;
+	return hwDownJointAngle;
 }
 
 bool L1L2::setJointVelocity(JointVelocitiesPtr velocity){
@@ -72,7 +52,17 @@ bool L1L2::setJointTorque(JointTorquesPtr position){
 }
 
 JointAnglesPtr L1L2::getJointPosition() const{
-	hwUpJointangle = d_motorEncoderVal;
+}
+
+void L1L2::queueToNodeJointPosition(int magneticEncoderVal, int magneticEncoderStatus, int motorEncoderVal){
+	
+	// We do the conversion between the hardware and liboncilla-coordinates here
+	d_magneticEncoderVal = magneticEncoderVal;
+	d_magneticEncoderStatus = magneticEncoderStatus;
+	d_motorEncoderVal = motorEncoderVal;
+	
+	double userUpJointAngle = 0.0;
+	double hwUpJointangle = (double) d_motorEncoderVal;
 
 	// conversion
 	if(d_isHip){
@@ -82,32 +72,16 @@ JointAnglesPtr L1L2::getJointPosition() const{
 		userUpJointAngle = d_isReversed? (1.0 - hwUpJointangle / d_maxMotorEncoderVal): (hwUpJointangle / d_maxMotorEncoderVal);
 	}
 
-	// set
-	rci::JointAnglesPrt result = rci::JointAngles::fromRad(userUpJointAngle);
+	// set from relative motor encoder values
+	_latestJointPosition->setFromRad(MotorAxisIndex,userUpJointAngle);
+	
+	// TODO: convert magnetic encoder values
+	// set from magnetic encoder values
+	_latestJointPosition->setFromRad(MagneticEncoderIndex, ((double) magneticEncoderVal) / 4096.0 * 2.0 * M_PI);
+	
 	return result;
+	
 }
-
-void L1L2::updateJointPositionHardwareCoordinates(int magneticEncoderVal, int magneticEncoderStatus, int motorEncoderVal){
-	d_magneticEncoderVal = magneticEncoderVal;
-	d_magneticEncoderStatus = magneticEncoderStatus;
-	d_motorEncoderVal = motorEncoderVal;
-}
-
-void L1L2::deepCopyResources(){
-	_lastCommandedPosition = JointAngles::copy(*_lastCommandedPosition);
-
-	_latestJointPosition = JointAngles::copy(*_latestJointPosition);
-
-	_lastCommandedVelocity = JointVelocitiesPtr(
-	        new JointVelocities(_lastCommandedVelocity->_values));
-
-	_lastCommandedTorque = JointTorquesPtr(
-	        new JointTorques(_lastCommandedTorque->_values));
-
-	_lastCommandedImpedance = JointImpedancePtr(
-	        new JointImpedance(_lastCommandedImpedance->_values));
-}
-
 
 void L1L2::unsafeUpdateJointPosition(unsigned int index, double value){
 	_latestJointPosition->setFromRad(index,value);
