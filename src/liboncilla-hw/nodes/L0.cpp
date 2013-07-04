@@ -14,7 +14,7 @@ L0::L0(const std::string & name)
 L0::~L0(){
 }
 
-void L0::updateForcesHardwareCoordinates(int force1, int force2, int force3){
+void L0::queueToNodeForces(int force1, int force2, int force3){
 	// TODO: Do conversion
 	updateForces({force1, force2, force3});
 }

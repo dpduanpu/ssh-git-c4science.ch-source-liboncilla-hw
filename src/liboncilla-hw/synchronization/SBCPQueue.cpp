@@ -23,7 +23,7 @@ SBCPQueue::SBCPQueue(unsigned int priority)
 	d_motordriverByLeg[rci::oncilla::LEFT_FORE] = sbcpbus->OpenDevice(0x01);
 	d_motordriverByLeg[rci::oncilla::RIGHT_FORE] = sbcpbus->OpenDevice(0x02);
 	d_motordriverByLeg[rci::oncilla::LEFT_HIND] = sbcpbus->OpenDevice(0x03);
-	d_motordriverByLeg[rci::oncilla::RIGHT_HIND] = sbcpbus->OpenDevice(0x04);	
+	d_motordriverByLeg[rci::oncilla::RIGHT_HIND] = sbcpbus->OpenDevice(0x04);
 }
 
 SBCPQueue::~SBCPQueue(){
@@ -34,27 +34,27 @@ void SBCPQueue::DownstreamData(){
 	for(Motordriver::const_iterator i = d_motordriverByLeg.begin();
 	    i != d_motordriverByLeg.end();
 	    ++i){
-		i->second->Motor1()->GoalPosition()->Set(L1NodeByLeg[i->first]->getJointPositionHardwareCoordinates());//double
-		i->second->Motor2()->GoalPosition()->Set(L2NodeByLeg[i->first]->getJointPositionHardwareCoordinates());//double
+		i->second->Motor1()->GoalPosition()->Set(L1NodeByLeg[i->first]->nodeToQueueJointPosition());//double
+		i->second->Motor2()->GoalPosition()->Set(L2NodeByLeg[i->first]->nodeToQueueJointPosition());//double
 	}
 }
 
 void SBCPQueue::UpstreamData(){
 	for(Motordriver::const_iterator i = d_motordriverByLeg.begin();	i != d_motordriverByLeg.end(); ++i){
 		// TODO: actually, one of those is a torque		
-		d_l0NodeByLeg[i->first]->updateForcesHardwareCoordinates(i->second->Force(0),i->second->Force(1),i->second->Force(2) );
+		d_l0NodeByLeg[i->first]->queueToNodeForces(i->second->Force(0),i->second->Force(1),i->second->Force(2) );
 
-		d_l1NodeByLeg[i->first]->updateJointPositionHardwareCoordinates(
+		d_l1NodeByLeg[i->first]->queueToNodeJointPosition(
 			i->second->Q1()->PositionAndStatus()->Get() & 0x3fff ,
 			(i->second->Q1()->PositionAndStatus()->Get() & 0xc000) >> 14,
 			i->second->Motor1()->PresentPosition()->Get());
 		
-		d_l2NodeByLeg[i->first]->updateJointPositionHardwareCoordinates(
+		d_l2NodeByLeg[i->first]->queueToNodeJointPosition(
 			i->second->Q2()->PositionAndStatus()->Get() & 0x3fff ,
 			(i->second->Q2()->PositionAndStatus()->Get() & 0xc000) >> 14,
 			i->second->Motor2()->PresentPosition()->Get());
 		
-		d_l3NodeByLeg[i->first]->updateJointPositionHardwareCoordinates(
+		d_l3NodeByLeg[i->first]->queueToNodeJointPosition(
 			i->second->Q3()->PositionAndStatus()->Get() & 0x3fff ,
 			(i->second->Q3()->PositionAndStatus()->Get() & 0xc000) >> 14);
 	}

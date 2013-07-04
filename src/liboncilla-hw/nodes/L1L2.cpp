@@ -64,6 +64,8 @@ void L1L2::queueToNodeJointPosition(int magneticEncoderVal, int magneticEncoderS
 	double userUpJointAngle = 0.0;
 	double hwUpJointangle = (double) d_motorEncoderVal;
 
+	//TODO: check status and report if necessary
+	
 	// conversion
 	if(d_isHip){
 		userUpJointAngle = (d_isReversed? -1: 1) * (hwUpJointangle - d_maxMotorEncoderVal / 2.0) / 4096.0 * (2.0 * M_PI);

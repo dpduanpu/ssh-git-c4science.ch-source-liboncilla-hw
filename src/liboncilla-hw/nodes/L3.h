@@ -8,23 +8,14 @@
 namespace liboncilla {
 namespace hw {
 
-class L3 : public rci::oncilla::L3 ,
-           public DeepCopyable {
+class L3 : public rci::oncilla::L3{
 public:
 	typedef boost::shared_ptr< ::liboncilla::hw::L3> Ptr;
 	
 	L3(const std::string & name);
 	virtual ~L3();
 
-	virtual rci::JointAnglesPtr getJointPosition() const;
-
-	virtual void deepCopyResources();
-
-	void updateJointPositionHardwareCoordinates(int magneticEncoderVal, int magneticEncoderStatus);
-
-private:
-	double d_hwUpJointAngle, d_userUpJointAngle; // upstream joint angles
-	int d_magneticEncoderVal, d_magneticEncoderStatus;
+	void queueToNodeJointPosition(int magneticEncoderVal, int magneticEncoderStatus);
 
 };
 

@@ -13,7 +13,7 @@ public:
     L0(const std::string & name);
     virtual ~L0();
 
-	void updateForcesHardwareCoordinates(int force1, int force2, int force3); // I am not sure if type = int should be type = Data or not...
+	void queueToNodeForces(int force1, int force2, int force3);
 
 };
 
