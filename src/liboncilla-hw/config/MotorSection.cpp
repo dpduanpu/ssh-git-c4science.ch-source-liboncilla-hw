@@ -38,12 +38,6 @@ MotorDriverSection::MotorDriverSection(options::Section::Ptr s)
   , d_hM1Params(Section())
   , d_hM2Params(Section()){
 
-  Section().AddSubSection("left-fore","configuration of left fore leg board");
-  Section().AddSubSection("right-fore","configuration of right fore leg board");
-  Section().AddSubSection("left-hind","configuration of left hind leg board");
-  Section().AddSubSection("right-hind","configuration of right hind leg board");;
-
-
 }
 
 MotorDriverSection::~MotorDriverSection(){}
@@ -56,6 +50,12 @@ MotorDriverBoards::MotorDriverBoards(options::Section::Ptr s)
   , d_shRightFore(Section())
   , d_shLeftHind(Section())
   , d_shRightHind(Section()){
+
+	LeftFore(). BoardIDOption()->SetValue(1);
+	RightFore().BoardIDOption()->SetValue(2);
+	LeftHind(). BoardIDOption()->SetValue(3);
+	RightHind().BoardIDOption()->SetValue(4);
+
 }
 
 MotorDriverBoards::~MotorDriverBoards(){}
