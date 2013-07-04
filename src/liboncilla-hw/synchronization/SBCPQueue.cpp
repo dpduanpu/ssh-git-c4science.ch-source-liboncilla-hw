@@ -28,7 +28,7 @@ SBCPQueue::SBCPQueue(unsigned int priority)
 
 
 	
-	//TODO: do this config-file-wise
+	///\todo do this config-file-wise
 	d_motordrivers[rci::oncilla::LEFT_FORE]  = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x01);
 	d_motordrivers[rci::oncilla::RIGHT_FORE] = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x02);
 	d_motordrivers[rci::oncilla::LEFT_HIND]  = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x03);
@@ -79,11 +79,11 @@ void SBCPQueue::UpstreamData(){
 }
 
 void SBCPQueue::PerformIO(){
-	// TODO : perform the IO
+	/// \todo : perform the IO
 }
 
 void SBCPQueue::InitializeIO(){
-	// TODO: Alexandre :)
+	/// \todo Alexandre :)
 }
 
 void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node){
@@ -112,7 +112,7 @@ void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
 	                 fi->second->Motor1().PositionLimit().Get() & 0x7fff,
 	                 fi->second->Motor1().PresentPosition().Get());
 
-	//todo hardcoded mapping, could be configurable
+	/// \todo hardcoded mapping, could be configurable
 	MotorAndEncoder m1;
 	m1.motor   = &(fi->second->Motor1());
 	m1.encoder = &(fi->second->Q1());
@@ -136,7 +136,7 @@ void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node){
 	                 fi->second->Motor2().PositionLimit().Get() & 0x7fff,
 	                 fi->second->Motor2().PresentPosition().Get());
 
-	//todo hardcoded mapping, could be configurable
+	/// \todo hardcoded mapping, could be configurable
 	MotorAndEncoder m2;
 	m2.motor   = &(fi->second->Motor2());
 	m2.encoder = &(fi->second->Q2());

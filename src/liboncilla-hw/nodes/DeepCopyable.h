@@ -8,7 +8,7 @@ namespace hw {
 /**
  * This is an internal interface to make resource nodes deep-copyable.
  *
- * @todo This interface should be removed, once robo-xeno is upgraded accordingly.
+ * \todo This interface should be removed, once robo-xeno is upgraded accordingly.
  */
 class DeepCopyable {
 public:

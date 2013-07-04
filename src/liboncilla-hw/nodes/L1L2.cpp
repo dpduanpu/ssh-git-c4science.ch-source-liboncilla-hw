@@ -67,7 +67,7 @@ void L1L2::queueToNodeJointPosition(int16_t magneticEncoderVal,
 	double userUpJointAngle = 0.0;
 	double hwUpJointangle = (double) motorPosition;
 
-	//TODO: check status and report if necessary
+	/// \todo check status and report if necessary
 	
 	// conversion
 	if(d_isHip){
@@ -80,7 +80,7 @@ void L1L2::queueToNodeJointPosition(int16_t magneticEncoderVal,
 	// set from relative motor encoder values
 	_latestJointPosition->setFromRad(MotorAxisIndex,userUpJointAngle);
 	
-	// TODO: convert magnetic encoder values
+	/// \todo convert magnetic encoder values
 	// set from magnetic encoder values
 	_latestJointPosition->setFromRad(MagneticEncoderIndex, ((double) magneticEncoderVal) / 4096.0 * 2.0 * M_PI);
 	
