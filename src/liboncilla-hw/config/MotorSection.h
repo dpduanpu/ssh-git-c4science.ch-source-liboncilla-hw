@@ -23,7 +23,7 @@ class BrushlessParameterSection : public options::ConfigSection {
 public :
 
 	BrushlessParameterSection(options::Section::Ptr s);
-	~BrushlessParameterSection();
+	virtual ~BrushlessParameterSection();
 
 	BCPP_ADD_OPTION(PGain,"p-gain",uint16_t,400,"P-gain of the motor")
 	BCPP_ADD_OPTION(IGain,"i-gain",uint16_t,20 ,"I-gain of the motor")
@@ -43,13 +43,13 @@ public :
 class BrushlessParameterGroup : public options::DynamicConfigSection<BrushlessParameterSection> {
 public :
 	BrushlessParameterGroup(options::Section::Ptr s);
-	~BrushlessParameterGroup();
+	virtual ~BrushlessParameterGroup();
 };
 
 class MotorDriverSection : public options::ConfigSection {
 public :
 	MotorDriverSection(options::Section::Ptr s);
-	~MotorDriverSection();
+	virtual ~MotorDriverSection();
 
 	BCPP_ADD_OPTION(BoardID,"id",int,-1,"Board ID to use")
 	BCPP_ADD_OPTION(M1Params,"m1-parameters",std::string,"default","Template parameter to use with M1 motor")
@@ -61,7 +61,7 @@ public :
 class MotorDriverGroup : public options::ConfigSection {
 public :
 	MotorDriverGroup(options::Section::Ptr s);
-	~MotorDriverGroup();
+	virtual ~MotorDriverGroup();
 	
 	BCPP_ADD_SUBSECTION(MotorDriverSection,
 	                    LeftFore,
@@ -87,7 +87,7 @@ public :
 class MotorSection : public options::ConfigSection {
 public :
 	MotorSection(options::Section::Ptr s);
-	~MotorSection();
+	virtual ~MotorSection();
 
 	BCPP_ADD_SUBSECTION(BrushlessParameterGroup,
 	                    Params,
