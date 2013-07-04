@@ -20,7 +20,6 @@ namespace hw {
 
 class Config;
 class BrushlessParameterGroup;
-class BrushlessParameterSection;
 class MotorDriverSection;
 
 class SBCPQueue : public Queue {
@@ -56,18 +55,22 @@ private:
 	typedef std::map<rci::oncilla::Leg, sbcp::amarsi::MotorDriver::Ptr> MotordriverByLeg;
 
 
-	void SetMotorParameters(const BrushlessParameterSection & params, 
+	void SetMotorParameters(const BrushlessParameterGroup & paramGroup,
+	                        const std::string & paramName,
 	                        int16_t expectedTsInMs,
 	                        sbcp::amarsi::MotorDriver::Motor & motor);
 
-	const sbcp::amarsi::MotorDriver::Ptr & OpenAndConfigureMotorDriver(const MotorDriverSection & def, 
-	                                                                   const BrushlessParameterGroup & params);
+	sbcp::amarsi::MotorDriver::Ptr OpenAndConfigureMotorDriver(const MotorDriverSection & def, 
+	                                                           const BrushlessParameterGroup & config,
+	                                                           int16_t expectedTsInMs);
 
 	MotorDriverByL0       d_mdvByL0;
 	MotorAndEncoderByL1L2 d_motAndEncByL1L2;
 	MagneticEncoderByL3   d_encByL3;
 
 	MotordriverByLeg d_motordrivers;
+
+
 
 	std::tr1::shared_ptr<sbcp::Bus> d_bus;
 };

@@ -27,16 +27,21 @@ SBCPQueue::SBCPQueue(const Config & config)
 	std::tr1::shared_ptr<sbcp::Bus> d_bus = sbcpConfig.OpenDefaultBusWithFrame(requiredFrameSize,requiredPacketSize);	
 
 	const MotorDriverGroup & devices = config.Motors().Devices();
-	const BrushlessParameterGroup & params = config.Motors().Params();
-	
+	const BrushlessParameterGroup & motorConfig = config.Motors().Params();
+	int16_t timestep = config.Main().Timestep();
+
 	d_motordrivers[rci::oncilla::LEFT_FORE]  = OpenAndConfigureMotorDriver(devices.LeftFore(),
-	                                                                       params);
+	                                                                       motorConfig,
+                                                                           timestep);
 	d_motordrivers[rci::oncilla::RIGHT_FORE] = OpenAndConfigureMotorDriver(devices.RightFore(),
-	                                                                       params);
+	                                                                       motorConfig,
+                                                                           timestep);
 	d_motordrivers[rci::oncilla::LEFT_HIND]  = OpenAndConfigureMotorDriver(devices.LeftHind(),
-	                                                                       params);
+	                                                                       motorConfig,
+                                                                           timestep);
 	d_motordrivers[rci::oncilla::RIGHT_HIND] = OpenAndConfigureMotorDriver(devices.RightHind(),
-	                                                                       params);
+	                                                                       motorConfig,
+                                                                           timestep);
 
 }
 
@@ -160,6 +165,62 @@ void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node){
 	d_encByL3[node] = &(fi->second->Q3());
 	
 }
+
+sbcp::amarsi::MotorDriver::Ptr 
+SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
+                                       const BrushlessParameterGroup & params,
+                                       int16_t expectedTsInMs) {
+	sbcp::amarsi::MotorDriver::Ptr  res = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(def.BoardID());
+	
+
+	if(!res) {
+		// board is just not here, buit we will throw later if it is required.
+		return res;
+	}
+
+	SetMotorParameters(params,
+	                   def.M1Params(),
+	                   expectedTsInMs,
+	                   res->Motor1());
+	SetMotorParameters(params,
+	                   def.M2Params(),
+	                   expectedTsInMs,
+	                   res->Motor2());
+
+
+	return res;
+}
+
+void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
+                                   const std::string & paramName,
+                                   int16_t expectedTsInMs,
+                                   sbcp::amarsi::MotorDriver::Motor & motor) {
+	//due to a bad design of biorob-cpp dynamic section we should do this
+	std::tr1::shared_ptr<BrushlessParameterSection> params = const_cast<BrushlessParameterGroup & >(paramGroup).SubSection(paramName);
+	
+	if(!params) {
+		throw std::runtime_error("Unknown motor parameter group '" + paramName + "'" );
+	}
+
+	motor.PGain().Set(params->PGain());
+	motor.IGain().Set(params->IGain());
+	motor.DGain().Set(params->DGain());
+	
+
+	motor.Stiffness().Set(params->Stiffness());
+	motor.Damping().Set(params->Damping());
+	motor.Preload().Set(params->PreCompression());
+
+	motor.MaxTorque().Set(params->MaxTorque());
+	motor.MaxSpeed().Set(params->MaxSpeed());
+	motor.MaxAcceleration().Set(params->MaxAcceleration());
+
+	motor.SmoothPositionUpdate().Set(expectedTsInMs);
+
+
+}
+
+
 
 } /* namespace hw */
 } /* namespace liboncilla */
