@@ -15,9 +15,7 @@ set(SRC_FILES xenomai-utils/NativeHolder.cpp
               nodes/L3.cpp
               nodes/SupervisorL4.cpp
               nodes/SupervisorTrunk.cpp
-              nodes/SupervisorWorld.cpp
-              nodes/DeepCopyable.cpp
-)
+              nodes/SupervisorWorld.cpp)
 
 set(HDR_FILES xenomai-utils/NativeHolder.h
               xenomai-utils/NativeError.h
@@ -37,8 +35,7 @@ set(HDR_FILES xenomai-utils/NativeHolder.h
               nodes/L3.h
               nodes/SupervisorL4.h
               nodes/SupervisorTrunk.h
-              nodes/SupervisorWorld.h
-              nodes/DeepCopyable.h)
+              nodes/SupervisorWorld.h)
 
 add_library(oncilla-hw MODULE ${SRC_FILES} ${HDR_FILES})
 

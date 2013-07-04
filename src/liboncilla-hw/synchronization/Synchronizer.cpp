@@ -4,7 +4,6 @@
 #include <errno.h>
 
 
-#include <liboncilla-hw/nodes/DeepCopyable.h>
 #include <liboncilla-hw/xenomai-utils/Utils.h>
 
 #include <liboncilla-hw/config/Config.h>

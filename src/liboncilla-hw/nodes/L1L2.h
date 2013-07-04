@@ -2,7 +2,6 @@
 
 #include <liboncilla/nodes/L1L2.h>
 
-#include "liboncilla-hw/nodes/DeepCopyable.h"
 
 namespace liboncilla {
 namespace hw {
