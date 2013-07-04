@@ -14,7 +14,6 @@ Config::Config()
 	: options::Config("liboncilla-hw")
 	, d_shMain(Section())
 	, d_shMotor(Section()){
-
 }
 
 Config::~Config(){
