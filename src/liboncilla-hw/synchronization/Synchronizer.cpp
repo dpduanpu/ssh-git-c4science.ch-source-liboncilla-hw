@@ -11,13 +11,13 @@
 namespace liboncilla{
 namespace hw {
 
-Synchronizer::Synchronizer(const MainSection & config)
+Synchronizer::Synchronizer(const Config & config)
 	: rci::oncilla::Synchronizer("Oncilla HW Synchronizer")
-	, d_timestep(config.Timestep() * 1.0e-3)
-	, d_priority(config.MainPriority())
-	, d_sbcpQueue(config.SBCPPriority())
-	, d_rbioQueue(config.RBIOPriority()){
-	CheckConfig(config);
+	, d_timestep(config.Main().Timestep() * 1.0e-3)
+	, d_priority(config.Main().MainPriority())
+	, d_sbcpQueue(config)
+	, d_rbioQueue(config.Main().RBIOPriority()){
+	CheckMainConfig(config.Main());
 	Init();
 	//TODO bad bad pratice new queue should be added automatically to this list.
 	d_queues.push_back(&d_sbcpQueue);
@@ -45,7 +45,7 @@ void Synchronizer::CheckPriority(unsigned int p, const std::string & name) {
 	}
 }
 
-void Synchronizer::CheckConfig(const MainSection& config){
+void Synchronizer::CheckMainConfig(const MainSection& config){
 	std::ostringstream os;
 	if(config.Timestep() < 2){
 		os << "Unsupported timestep of " << config.Timestep()

@@ -14,6 +14,7 @@ class HWOncillaBackend;
 namespace liboncilla {
 
 namespace hw {
+	class Config;
 	class MainSection;
 	class Queue;
 
@@ -21,7 +22,7 @@ namespace hw {
 	public :
 		typedef boost::shared_ptr< ::liboncilla::hw::Synchronizer > Ptr;
 
-		Synchronizer(const MainSection & config);
+		Synchronizer(const Config & config);
 		virtual ~Synchronizer();
 	
 		
@@ -60,7 +61,7 @@ namespace hw {
 	private :
 		typedef std::vector<Queue*> ListOfQueue;
 		void Init();
-		void CheckConfig(const MainSection & config);
+		void CheckMainConfig(const MainSection & config);
 		void CheckPriority(unsigned int p, const std::string & name);
 		void InitRT();
 		void InitModules();

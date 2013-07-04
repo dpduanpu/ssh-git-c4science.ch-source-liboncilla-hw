@@ -12,14 +12,14 @@
 
 #include <libsbcp/bus/Bus.h>
 #include <libsbcp/devices/amarsi/MotorDriver.h>
-
+#include <liboncilla-hw/config/Config.h>
 
 namespace liboncilla {
 namespace hw {
 
 class SBCPQueue : public Queue {
 public:
-	SBCPQueue(unsigned int priority);
+	SBCPQueue(const liboncilla::hw::Config & config);
 	virtual ~SBCPQueue();
 
 	virtual void DownstreamData();
@@ -34,9 +34,9 @@ public:
 
 private:
 	//std::tr1::shared_ptr<sbcp::amarsi::MotorDriver> d_motordrivers[4];
-
+	
 	typedef std::map<liboncilla::hw::L0::Ptr, sbcp::amarsi::MotorDriver::Ptr > MotorDriverByL0;
-
+	
 	struct MotorAndEncoder{
 		sbcp::amarsi::MotorDriver::Motor           * motor;
 		sbcp::amarsi::MotorDriver::MagneticEncoder * encoder;
@@ -46,6 +46,11 @@ private:
 	typedef std::map<liboncilla::hw::L3::Ptr , sbcp::amarsi::MotorDriver::MagneticEncoder *> MagneticEncoderByL3;
 
 	typedef std::map<rci::oncilla::Leg, sbcp::amarsi::MotorDriver::Ptr> MotordriverByLeg;
+
+
+	void SetMotorParameters(const BrushlessParameters & params, 
+	                        int16_t expectedTsInMs,
+	                        sbcp::amarsi::MotorDriver::Motor & motor);
 
 	MotorDriverByL0       d_mdvByL0;
 	MotorAndEncoderByL1L2 d_motAndEncByL1L2;

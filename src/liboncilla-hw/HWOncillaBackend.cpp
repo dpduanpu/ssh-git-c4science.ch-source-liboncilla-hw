@@ -28,7 +28,7 @@ HWOncillaBackend::HWOncillaBackend(){
 	// of the module
 	LockMemory();
 	d_config.LoadAllFiles();
-	d_synchronizer = loh::Synchronizer::Ptr(new loh::Synchronizer(d_config.Main()));
+	d_synchronizer = loh::Synchronizer::Ptr(new loh::Synchronizer(d_config));
 }
 
 
