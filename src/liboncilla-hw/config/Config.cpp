@@ -13,7 +13,7 @@ namespace hw {
 Config::Config()
 	: options::Config("liboncilla-hw")
 	, d_shMain(Section())
-	, d_shMotor(Section()){
+	, d_shMotors(Section()){
 }
 
 Config::~Config(){

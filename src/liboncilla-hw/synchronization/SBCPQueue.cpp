@@ -8,6 +8,7 @@
 #include "SBCPQueue.h"
 
 #include <libsbcp/utils/Config.h>
+#include <liboncilla-hw/config/Config.h>
 
 namespace liboncilla {
 namespace hw {
@@ -25,14 +26,18 @@ SBCPQueue::SBCPQueue(const Config & config)
 
 	std::tr1::shared_ptr<sbcp::Bus> d_bus = sbcpConfig.OpenDefaultBusWithFrame(requiredFrameSize,requiredPacketSize);	
 
-
-
+	const MotorDriverGroup & devices = config.Motors().Devices();
+	const BrushlessParameterGroup & params = config.Motors().Params();
 	
-	///\todo do this config-file-wise
-	d_motordrivers[rci::oncilla::LEFT_FORE]  = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x01);
-	d_motordrivers[rci::oncilla::RIGHT_FORE] = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x02);
-	d_motordrivers[rci::oncilla::LEFT_HIND]  = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x03);
-	d_motordrivers[rci::oncilla::RIGHT_HIND] = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(0x04);
+	d_motordrivers[rci::oncilla::LEFT_FORE]  = OpenAndConfigureMotorDriver(devices.LeftFore(),
+	                                                                       params);
+	d_motordrivers[rci::oncilla::RIGHT_FORE] = OpenAndConfigureMotorDriver(devices.RightFore(),
+	                                                                       params);
+	d_motordrivers[rci::oncilla::LEFT_HIND]  = OpenAndConfigureMotorDriver(devices.LeftHind(),
+	                                                                       params);
+	d_motordrivers[rci::oncilla::RIGHT_HIND] = OpenAndConfigureMotorDriver(devices.RightHind(),
+	                                                                       params);
+
 }
 
 SBCPQueue::~SBCPQueue(){

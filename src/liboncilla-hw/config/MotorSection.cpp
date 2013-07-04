@@ -5,7 +5,7 @@
 namespace liboncilla {
 namespace hw {
 
-BrushlessMotorSection::BrushlessMotorSection(options::Section::Ptr s)
+BrushlessParameterSection::BrushlessParameterSection(options::Section::Ptr s)
   : options::ConfigSection(s)
   , d_hPGain(Section())
   , d_hIGain(Section())
@@ -18,17 +18,16 @@ BrushlessMotorSection::BrushlessMotorSection(options::Section::Ptr s)
   , d_hMaxTorque(Section()){
 }
 
-BrushlessMotorSection::~BrushlessMotorSection(){}
+BrushlessParameterSection::~BrushlessParameterSection(){}
 
 
 
-BrushlessParameters::BrushlessParameters(options::Section::Ptr s)
-  : options::DynamicConfigSection<BrushlessMotorSection>(s){
-  Section().AddSubSection("hip","Default parameter for hip motors");
-  Section().AddSubSection("knee","Default parameters for knee motors");
+BrushlessParameterGroup::BrushlessParameterGroup(options::Section::Ptr s)
+  : options::DynamicConfigSection<BrushlessParameterSection>(s){
+  Section().AddSubSection("default","Default parameters for knee motors");
 }
 
-BrushlessParameters::~BrushlessParameters(){}
+BrushlessParameterGroup::~BrushlessParameterGroup(){}
 
 
 
@@ -44,13 +43,13 @@ MotorDriverSection::~MotorDriverSection(){}
 
 
 
-MotorDriverBoards::MotorDriverBoards(options::Section::Ptr s)
+MotorDriverGroup::MotorDriverGroup(options::Section::Ptr s)
   : options::ConfigSection(s)
   , d_shLeftFore(Section())
   , d_shRightFore(Section())
   , d_shLeftHind(Section())
   , d_shRightHind(Section()){
-
+	//sets default if od the boards
 	LeftFore(). BoardIDOption()->SetValue(1);
 	RightFore().BoardIDOption()->SetValue(2);
 	LeftHind(). BoardIDOption()->SetValue(3);
@@ -58,9 +57,7 @@ MotorDriverBoards::MotorDriverBoards(options::Section::Ptr s)
 
 }
 
-MotorDriverBoards::~MotorDriverBoards(){}
-
-
+MotorDriverGroup::~MotorDriverGroup(){}
 
 } // namespace hw
 } // namespace liboncilla

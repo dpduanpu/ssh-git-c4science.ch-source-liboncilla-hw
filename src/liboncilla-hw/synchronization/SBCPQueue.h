@@ -12,10 +12,16 @@
 
 #include <libsbcp/bus/Bus.h>
 #include <libsbcp/devices/amarsi/MotorDriver.h>
-#include <liboncilla-hw/config/Config.h>
+
 
 namespace liboncilla {
 namespace hw {
+
+
+class Config;
+class BrushlessParameterGroup;
+class BrushlessParameterSection;
+class MotorDriverSection;
 
 class SBCPQueue : public Queue {
 public:
@@ -31,6 +37,8 @@ public:
 	void RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node);
 	void RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node);
 	void RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node);
+
+	void CalibrateMotorDrivers();
 
 private:
 	//std::tr1::shared_ptr<sbcp::amarsi::MotorDriver> d_motordrivers[4];
@@ -48,9 +56,12 @@ private:
 	typedef std::map<rci::oncilla::Leg, sbcp::amarsi::MotorDriver::Ptr> MotordriverByLeg;
 
 
-	void SetMotorParameters(const BrushlessParameters & params, 
+	void SetMotorParameters(const BrushlessParameterSection & params, 
 	                        int16_t expectedTsInMs,
 	                        sbcp::amarsi::MotorDriver::Motor & motor);
+
+	const sbcp::amarsi::MotorDriver::Ptr & OpenAndConfigureMotorDriver(const MotorDriverSection & def, 
+	                                                                   const BrushlessParameterGroup & params);
 
 	MotorDriverByL0       d_mdvByL0;
 	MotorAndEncoderByL1L2 d_motAndEncByL1L2;

@@ -19,11 +19,11 @@
 namespace liboncilla {
 namespace hw {
 
-class BrushlessMotorSection : public options::ConfigSection {
+class BrushlessParameterSection : public options::ConfigSection {
 public :
 
-	BrushlessMotorSection(options::Section::Ptr s);
-	~BrushlessMotorSection();
+	BrushlessParameterSection(options::Section::Ptr s);
+	~BrushlessParameterSection();
 
 	BCPP_ADD_OPTION(PGain,"p-gain",uint16_t,400,"P-gain of the motor")
 	BCPP_ADD_OPTION(IGain,"i-gain",uint16_t,20 ,"I-gain of the motor")
@@ -40,10 +40,10 @@ public :
 
 };
 
-class BrushlessParameters : public options::DynamicConfigSection<BrushlessMotorSection> {
+class BrushlessParameterGroup : public options::DynamicConfigSection<BrushlessParameterSection> {
 public :
-	BrushlessParameters(options::Section::Ptr s);
-	~BrushlessParameters();
+	BrushlessParameterGroup(options::Section::Ptr s);
+	~BrushlessParameterGroup();
 };
 
 class MotorDriverSection : public options::ConfigSection {
@@ -58,10 +58,10 @@ public :
 };
 
 
-class MotorDriverBoards : public options::ConfigSection {
+class MotorDriverGroup : public options::ConfigSection {
 public :
-	MotorDriverBoards(options::Section::Ptr s);
-	~MotorDriverBoards();
+	MotorDriverGroup(options::Section::Ptr s);
+	~MotorDriverGroup();
 	
 	BCPP_ADD_SUBSECTION(MotorDriverSection,
 	                    LeftFore,
@@ -84,17 +84,17 @@ public :
 
 
 
-class MotorSection : public options::DynamicConfigSection<MotorDriverSection> {
+class MotorSection : public options::ConfigSection {
 public :
 	MotorSection(options::Section::Ptr s);
 	~MotorSection();
 
-	BCPP_ADD_SUBSECTION(BrushlessParameters,
+	BCPP_ADD_SUBSECTION(BrushlessParameterGroup,
 	                    Params,
 	                    "params",
 	                    "Group of parameters that could be applied to a motor. A 'default' one is always existing, but you can create any number of thoses. You could use them to apply it to a perticular motor in the 'device' section");
 
-	BCPP_ADD_SUBSECTION(MotorDriverBoards,
+	BCPP_ADD_SUBSECTION(MotorDriverGroup,
 	                    Devices,
 	                    "device",
 	                    "Configuration for the motor device neede for oncilla");

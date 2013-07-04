@@ -20,7 +20,7 @@ public:
 	virtual ~Config();
 
 	BCPP_ADD_SUBSECTION(MainSection,Main,"main","Main settings for liboncilla-hw")
-	BCPP_ADD_SUBSECTION(MotorSection,Motor,"motor","Section for motor configuration")
+	BCPP_ADD_SUBSECTION(MotorSection,Motors,"motor","Section for motor configuration")
 
 
 };
