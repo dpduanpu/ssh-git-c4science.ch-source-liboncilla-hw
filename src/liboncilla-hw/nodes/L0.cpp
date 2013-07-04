@@ -16,7 +16,7 @@ L0::~L0(){
 
 void L0::queueToNodeForces(int force1, int force2, int force3){
 	// TODO: Do conversion
-	updateForces(rci::ForcesyPtr(new rci::Forces(force1,force2,force3) ) );
+	updateForces(rci::ForcesPtr(new rci::Forces(force1,force2,force3) ) );
 }
 
 } /* namespace hw */
