@@ -12,15 +12,12 @@ L3::L3(const std::string & name)
 L3::~L3(){
 }
 
-void L3::queueToNodeJointPosition(int magneticEncoderVal, int magneticEncoderStatus){
-	d_magneticEncoderVal = magneticEncoderVal;
-	d_magneticEncoderStatus = magneticEncoderStatus;
-	
+void L3::queueToNodeJointPosition(int16_t magneticEncoderVal, int16_t magneticEncoderStatus){
 	//TODO: check status and report if necessary
 	//TODO: do conversion
 	
 	double sign = 1, offset = 0; // TODO: BUT THIS SHOULD BE CHANGED
-	double userUpJointAngle = sign * (d_hwUpJointAngle + offset) / 4096.0 * (2 * M_PI);
+	double userUpJointAngle = sign * (magneticEncoderVal + offset) / 4096.0 * (2.0 * M_PI);
 	
 	_latestJointPosition->setFromRad(0, userUpJointAngle);
 }

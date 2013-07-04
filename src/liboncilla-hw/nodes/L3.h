@@ -15,7 +15,8 @@ public:
 	L3(const std::string & name);
 	virtual ~L3();
 
-	void queueToNodeJointPosition(int magneticEncoderVal, int magneticEncoderStatus);
+	void queueToNodeJointPosition(int16_t magneticEncoderVal, 
+	                              int16_t magneticEncoderStatus);
 
 };
 
