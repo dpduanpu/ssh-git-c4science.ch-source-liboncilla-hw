@@ -60,7 +60,7 @@ private:
 	                        int16_t expectedTsInMs,
 	                        sbcp::amarsi::MotorDriver::Motor & motor);
 
-	sbcp::amarsi::MotorDriver::Ptr OpenAndConfigureMotorDriver(const MotorDriverSection & def, 
+	sbcp::amarsi::MotorDriver::Ptr OpenAndConfigureMotorDriver(int,// todo arne: const MotorDriverSection & def, 
 	                                                           const BrushlessParameterGroup & config,
 	                                                           int16_t expectedTsInMs);
 

@@ -30,16 +30,16 @@ SBCPQueue::SBCPQueue(const Config & config)
 	const BrushlessParameterGroup & motorConfig = config.Motors().Params();
 	int16_t timestep = config.Main().Timestep();
 
-	d_motordrivers[rci::oncilla::LEFT_FORE]  = OpenAndConfigureMotorDriver(devices.LeftFore(),
+	d_motordrivers[rci::oncilla::LEFT_FORE]  = OpenAndConfigureMotorDriver(1,// todo arne: devices.LeftFore(),
 	                                                                       motorConfig,
                                                                            timestep);
-	d_motordrivers[rci::oncilla::RIGHT_FORE] = OpenAndConfigureMotorDriver(devices.RightFore(),
+	d_motordrivers[rci::oncilla::RIGHT_FORE] = OpenAndConfigureMotorDriver(2,// todo arne: devices.RightFore(),
 	                                                                       motorConfig,
                                                                            timestep);
-	d_motordrivers[rci::oncilla::LEFT_HIND]  = OpenAndConfigureMotorDriver(devices.LeftHind(),
+	d_motordrivers[rci::oncilla::LEFT_HIND]  = OpenAndConfigureMotorDriver(3,// todo arne: devices.LeftHind(),
 	                                                                       motorConfig,
                                                                            timestep);
-	d_motordrivers[rci::oncilla::RIGHT_HIND] = OpenAndConfigureMotorDriver(devices.RightHind(),
+	d_motordrivers[rci::oncilla::RIGHT_HIND] = OpenAndConfigureMotorDriver(4,// todo arne: devices.RightHind(),
 	                                                                       motorConfig,
                                                                            timestep);
 
@@ -167,10 +167,10 @@ void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node){
 }
 
 sbcp::amarsi::MotorDriver::Ptr 
-SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
+SBCPQueue::OpenAndConfigureMotorDriver(int id,// todo arne: const MotorDriverSection & def,
                                        const BrushlessParameterGroup & params,
                                        int16_t expectedTsInMs) {
-	sbcp::amarsi::MotorDriver::Ptr  res = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(def.BoardID());
+	sbcp::amarsi::MotorDriver::Ptr  res = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(id);// todo arne: def.BoardID());
 	
 
 	if(!res) {
@@ -178,14 +178,14 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
 		return res;
 	}
 
-	SetMotorParameters(params,
+	/*SetMotorParameters(params,
 	                   def.M1Params(),
 	                   expectedTsInMs,
 	                   res->Motor1());
 	SetMotorParameters(params,
 	                   def.M2Params(),
 	                   expectedTsInMs,
-	                   res->Motor2());
+	                   res->Motor2());*/
 
 
 	return res;
