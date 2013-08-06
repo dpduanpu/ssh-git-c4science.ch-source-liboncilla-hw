@@ -16,12 +16,13 @@ Synchronizer::Synchronizer(const Config & config)
 	, d_timestep(config.Main().Timestep() * 1.0e-3)
 	, d_priority(config.Main().MainPriority())
 	, d_sbcpQueue(config)
-	, d_rbioQueue(config.Main().RBIOPriority()){
+//	, d_rbioQueue(config.Main().RBIOPriority())
+{
 	CheckMainConfig(config.Main());
 	Init();
 	//TODO bad bad pratice new queue should be added automatically to this list.
 	d_queues.push_back(&d_sbcpQueue);
-	d_queues.push_back(&d_rbioQueue);
+	//d_queues.push_back(&d_rbioQueue);
 }
 
 void Synchronizer::Init(){
@@ -167,7 +168,7 @@ void Synchronizer::RegisterTrunk(const Trunk::Ptr& node){
 }
 
 void Synchronizer::RegisterL0(rci::oncilla::Leg l , const L0::Ptr& node){
-	d_rbioQueue.RegisterL0(l,node);
+	//d_rbioQueue.RegisterL0(l,node);
 	d_sbcpQueue.RegisterL0(l,node);
 }
 

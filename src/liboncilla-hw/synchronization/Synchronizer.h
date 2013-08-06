@@ -87,7 +87,7 @@ namespace hw {
 		NativeHolder<RT_EVENT> d_event;
 		unsigned long d_idleQueueMask;
 		SBCPQueue  d_sbcpQueue;
-		RBIOQueue  d_rbioQueue;
+	//	RBIOQueue  d_rbioQueue;
 		ListOfQueue d_queues;
 
 	};
