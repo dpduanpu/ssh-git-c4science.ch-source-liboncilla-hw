@@ -14,7 +14,7 @@ namespace liboncilla {
 namespace hw {
 
 SBCPQueue::SBCPQueue(const Config & config)
-	: Queue(config.Main().SBCPPriority(),true){
+	: Queue(config.Main().SBCPPriority(),true), d_bus() {
 	
 	sbcp::Config sbcpConfig;
 	sbcpConfig.LoadAllFiles();
@@ -24,7 +24,13 @@ SBCPQueue::SBCPQueue(const Config & config)
 	// create links to the 4 motorboards
 	unsigned int requiredPacketSize = 32; //(Size of the biggest packet you will send, the actual maximum might be higher)
 
-	std::tr1::shared_ptr<sbcp::Bus> d_bus = sbcpConfig.OpenDefaultBusWithFrame(requiredFrameSize,requiredPacketSize);	
+	d_bus = sbcpConfig.OpenDefaultBusWithFrame(requiredFrameSize,requiredPacketSize);	
+
+	if (!d_bus) {
+		throw std::runtime_error("SBCPQueue::SBCPQueue() Can't load bus due to missing configuration.");
+	} else {
+		std::cout << "Bus Workflow: "<< d_bus->CurrentWorkflow() << std::endl;
+	}
 
 	const MotorDriverGroup & devices = config.Motors().Devices();
 	const BrushlessParameterGroup & motorConfig = config.Motors().Params();
@@ -170,6 +176,13 @@ sbcp::amarsi::MotorDriver::Ptr
 SBCPQueue::OpenAndConfigureMotorDriver(int id,// todo arne: const MotorDriverSection & def,
                                        const BrushlessParameterGroup & params,
                                        int16_t expectedTsInMs) {
+
+	if (!d_bus) {
+		throw std::runtime_error("SBCPQueue::OpenAndConfigureMotorDriver() Can't load bus due to missing configuration.");
+	} else {
+		std::cout << "SBCPQueue::OpenAndConfigureMotorDriver() Bus Workflow: "<< d_bus->CurrentWorkflow() << std::endl;
+	}
+
 	sbcp::amarsi::MotorDriver::Ptr  res = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(id);// todo arne: def.BoardID());
 	
 
