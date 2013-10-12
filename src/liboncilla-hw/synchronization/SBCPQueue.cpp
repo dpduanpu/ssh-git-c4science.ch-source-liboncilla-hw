@@ -8,6 +8,7 @@
 #include "SBCPQueue.h"
 
 #include <libsbcp/utils/Config.h>
+
 #include <liboncilla-hw/config/Config.h>
 
 namespace liboncilla {
@@ -24,7 +25,7 @@ SBCPQueue::SBCPQueue(const Config & config)
 	// create links to the 4 motorboards
 	unsigned int requiredPacketSize = 32; //(Size of the biggest packet you will send, the actual maximum might be higher)
 
-	d_bus = sbcpConfig.OpenDefaultBusWithFrame(requiredFrameSize,requiredPacketSize);	
+	d_bus = sbcpConfig.OpenDefaultBusWithFrame(requiredFrameSize, requiredPacketSize);	
 
 	if (!d_bus) {
 		throw std::runtime_error("SBCPQueue::SBCPQueue() Can't load bus due to missing configuration.");
@@ -95,11 +96,30 @@ void SBCPQueue::UpstreamData(){
 }
 
 void SBCPQueue::PerformIO(){
-	/// \todo : perform the IO
+	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
+
+	// Start transfer
+	w.StartTransfers();
+
+	// Wait for transfer to complete
+	w.WaitForTransfersCompletion();	
 }
 
 void SBCPQueue::InitializeIO(){
-	/// \todo Alexandre :)
+	// Enable scheduled woirkflow
+	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
+
+	// Append devices to transfer
+	for (MotordriverByLeg::iterator md = d_motordrivers.begin();
+	     md != d_motordrivers.end();
+	     ++md) {
+	    w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(md->second));
+	}
+}
+
+void SBCPQueue::DeinitializeIO(){
+	// Disable scheduled woirkflow
+	this->d_bus->Lazy();
 }
 
 void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node){
