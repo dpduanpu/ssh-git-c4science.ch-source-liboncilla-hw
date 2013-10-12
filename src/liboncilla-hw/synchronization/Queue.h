@@ -24,13 +24,14 @@ public:
 	/**
 	 * /param preferNonRt: use callbacks which are not supposed to run on the realtime Kernel (default: true)
 	 */
-	Queue(unsigned int priority,bool preferNonRt);
+	Queue(unsigned int priority, bool preferNonRt);
 	virtual ~Queue();
 
 	/**
 	 * Sends the data from liboncilla-hw to the hardware
 	 */
 	virtual void DownstreamData() = 0;
+
 	/**
 	 * Sends the data from hardware to liboncilla-hw
 	 */
@@ -42,11 +43,17 @@ public:
 	virtual void PerformIO()      = 0;
 
 	/**
-	 * Callback to init things
+	 * Callback to initialize things
 	 */
 	virtual void InitializeIO()   = 0;
 
+	/**
+	 * Callback to de-initialize things
+	 */
+	virtual void DeinitializeIO()   = 0;
+
 	void StartTask();
+
 	void StopTask();
 
 

@@ -42,6 +42,8 @@ void Queue::StartTask() {
 	xeno_call(rt_task_create,t,NULL,0,d_priority,0);
 	d_task = NativeHolder<RT_TASK>(t);
 
+	this->InitializeIO();
+
 	log(debug,"Starting task for Queue ",this);
 
 	xeno_call(rt_task_start,
@@ -57,6 +59,7 @@ void Queue::TaskEntryPoint(void * itself) {
 void Queue::StopTask() {
 	log(debug,"Stopping Queue ",this);
 	d_task = NativeHolder<RT_TASK>();
+	this->DeinitializeIO();
 }
 
 void Queue::Loop() {
@@ -64,7 +67,7 @@ void Queue::Loop() {
 	xeno_call(rt_event_bind,&e,EventName,TM_INFINITE);
 	unsigned long mask;
 
-	InitializeIO();
+	//InitializeIO();
 
 	while(true) {
 		int res = rt_event_wait(&e,Mask(),&mask,EV_ANY,TM_INFINITE);
