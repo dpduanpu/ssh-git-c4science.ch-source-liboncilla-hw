@@ -11,6 +11,7 @@
 #include <liboncilla-hw/nodes/Nodes.h>
 
 #include <libsbcp/bus/Bus.h>
+#include <libsbcp/bus/ScheduledWorkflow.h>
 #include <libsbcp/devices/amarsi/MotorDriver.h>
 
 
@@ -31,6 +32,7 @@ public:
 	virtual void UpstreamData();
 	virtual void PerformIO();
 	virtual void InitializeIO();
+	virtual void DeinitializeIO();
 
 	void RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node);
 	void RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node);
