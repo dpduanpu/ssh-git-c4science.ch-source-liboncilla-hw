@@ -43,6 +43,10 @@ void RBIOQueue::InitializeIO(){
 	//nothing to do
 }
 
+void RBIOQueue::DeinitializeIO(){
+	//nothing to do
+}
+
 void RBIOQueue::RegisterL0(rci::oncilla::Leg l , const L0::Ptr& node){
 
 	ServoGenerator::ServoByName::const_iterator fi = d_servos.find(LegPrefix(l));

@@ -25,6 +25,7 @@ public:
 	virtual void UpstreamData();
 	virtual void PerformIO();
 	virtual void InitializeIO();
+	virtual void DeinitializeIO();
 
 	void RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node);
 private :
