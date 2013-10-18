@@ -88,6 +88,8 @@ void Queue::Loop() {
 		xeno_call(rt_event_clear,&e,Mask(),&mask);
 	}
 
+    //DeinitializeIO();
+
 	rt_event_unbind(&e);
 }
 

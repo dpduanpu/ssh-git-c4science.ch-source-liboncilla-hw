@@ -15,7 +15,7 @@ namespace liboncilla {
 namespace hw {
 
 SBCPQueue::SBCPQueue(const Config & config)
-	: Queue(config.Main().SBCPPriority(),true), d_bus() {
+	: Queue(config.Main().SBCPPriority(), true), d_bus() {
 	
 	sbcp::Config sbcpConfig;
 	sbcpConfig.LoadAllFiles();
@@ -56,46 +56,56 @@ SBCPQueue::~SBCPQueue(){
 }
 
 void SBCPQueue::DownstreamData(){
-
+    std::cout << "------ SBCPQueue::DownstreamData() ------" << std::endl;
 	for(MotorAndEncoderByL1L2::const_iterator motAndEnc = d_motAndEncByL1L2.begin();
-	    motAndEnc != d_motAndEncByL1L2.end();
+	    motAndEnc != d_motAndEncByL1L2.
+end();
 	    ++motAndEnc) { 
-		motAndEnc->second.motor->GoalPosition().Set(motAndEnc->first->nodeToQueueJointPosition());
-	}
-
-
+		    motAndEnc->second.motor->GoalPosition().Set(motAndEnc->first->nodeToQueueJointPosition());
+            std::cout << "set position: " << motAndEnc->first->nodeToQueueJointPosition() << std::endl;
+    }
+    std::cout << "------ SBCPQueue::DownstreamData() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::UpstreamData(){
+    std::cout << "------ SBCPQueue::UpstreamData() ------" << std::endl;
 	for(MotorAndEncoderByL1L2::const_iterator motAndEnc = d_motAndEncByL1L2.begin();
 	    motAndEnc != d_motAndEncByL1L2.end();
 	    ++motAndEnc) { 
-		uint16_t pos(motAndEnc->second.encoder->PositionAndStatus().Get() & 0x3fff);
-		uint16_t status((motAndEnc->second.encoder->PositionAndStatus().Get() & 0xc000) >> 14);
-		int16_t  motPos(motAndEnc->second.motor->PresentPosition().Get() );
-		motAndEnc->first->queueToNodeJointPosition(pos,status,motPos);
+		    uint16_t pos(motAndEnc->second.encoder->PositionAndStatus().Get() & 0x3fff);
+		    uint16_t status((motAndEnc->second.encoder->PositionAndStatus().Get() & 0xc000) >> 14);
+		    int16_t  motPos(motAndEnc->second.motor->PresentPosition().Get() );
+		    motAndEnc->first->queueToNodeJointPosition(pos,status,motPos);
 	}
 
 	for(MotorDriverByL0::const_iterator mdv = d_mdvByL0.begin();
 	    mdv != d_mdvByL0.end();
 	    ++mdv) {
-		mdv->first->queueToNodeForces(mdv->second->Force(0).Get(),
+        if (mdv->second == NULL) { 
+            // TODO: Throw? std::cout << "SBCPQueue::InitializeIO: Ignoring motor driver "<<md->second<<std::endl;
+        } else {
+    		mdv->first->queueToNodeForces(mdv->second->Force(0).Get(),
 		                              mdv->second->Force(1).Get(),
 		                              mdv->second->Force(2).Get() );
+        }
 	}
 	    
 	for(MagneticEncoderByL3::const_iterator enc = d_encByL3.begin();
 	    enc != d_encByL3.end();
 	    ++enc) {
-
-		enc->first->queueToNodeJointPosition(enc->second->PositionAndStatus().Get() & 0x3fff ,
+        if (enc->second == NULL) { 
+            // TODO: Throw? std::cout << "SBCPQueue::InitializeIO: Ignoring motor driver "<<md->second<<std::endl;
+        } else {
+		    enc->first->queueToNodeJointPosition(enc->second->PositionAndStatus().Get() & 0x3fff ,
 		                                     (enc->second->PositionAndStatus().Get() & 0xc000) >> 14);
-
+        }
 	}
-
+    std::cout << "------ SBCPQueue::UpstreamData() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::PerformIO(){
+
+    std::cout << "------ SBCPQueue::PerformIO() ------" << std::endl;
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
 	// Start transfer
@@ -103,9 +113,11 @@ void SBCPQueue::PerformIO(){
 
 	// Wait for transfer to complete
 	w.WaitForTransfersCompletion();	
+    std::cout << "------ SBCPQueue::PerformIO() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::InitializeIO(){
+    std::cout << "------ SBCPQueue::InitializeIO() ------" << std::endl;
 	// Enable scheduled woirkflow
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
@@ -113,13 +125,22 @@ void SBCPQueue::InitializeIO(){
 	for (MotordriverByLeg::iterator md = d_motordrivers.begin();
 	     md != d_motordrivers.end();
 	     ++md) {
-	    w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(md->second));
+
+        if (md->second == NULL) { 
+            std::cout << "SBCPQueue::InitializeIO: Ignoring motor driver "<<md->second<<std::endl;
+        } else {
+            std::cout << "appending scheduled device " << md->second << std::endl;
+	        w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(md->second));
+        }
 	}
+    std::cout << "------ SBCPQueue::InitializeIO() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::DeinitializeIO(){
+    std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl;
 	// Disable scheduled woirkflow
 	this->d_bus->Lazy();
+    std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node){
@@ -130,8 +151,6 @@ void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node){
 	}
 	
 	d_mdvByL0[node] = fi->second;
-
-
 }
 
 void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
@@ -142,6 +161,12 @@ void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
 	if(fi == d_motordrivers.end()){ 
 		throw(std::runtime_error("Failed to open motordriver earlier, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
 	}
+
+    if (fi->second == NULL) { 
+        // TODO: Throw?
+        std::cout << "SBCPQueue::RegisterL1: Ignoring L1 of leg "<<l<<". Is it connected?"<<std::endl;
+        return;
+    }
 
 	node->initialize(isRightLeg,
 	                 isHip, 
@@ -154,7 +179,6 @@ void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
 	m1.encoder = &(fi->second->Q1());
 
 	d_motAndEncByL1L2[node] = m1;
-   
 }
 
 void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node){
@@ -167,6 +191,12 @@ void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node){
 		throw(std::runtime_error("Failed to open motordriver earlier, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
 	}
 
+    if (fi->second == NULL) { 
+        // TODO: Throw?
+        std::cout << "SBCPQueue::RegisterL2: Ignoring L2 of leg "<<l<<". Is it connected?"<<std::endl;
+        return;
+    }
+
 	node->initialize(isRightLeg,
 	                 isHip, 
 	                 fi->second->Motor2().PositionLimit().Get() & 0x7fff,
@@ -178,7 +208,6 @@ void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node){
 	m2.encoder = &(fi->second->Q2());
 
 	d_motAndEncByL1L2[node] = m2;
-	
 }
 
 void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node){
@@ -187,9 +216,14 @@ void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node){
 	if(fi == d_motordrivers.end()){ 
 		throw(std::runtime_error("Failed to open motordriver, upon initialization of this Queue, for motordriver " + LegPrefix(l)));
 	}
+
+    if (fi->second == NULL) { 
+        // TODO: Throw?
+        std::cout << "SBCPQueue::RegisterL3: Ignoring L3 of leg "<<l<<". Is it connected?"<<std::endl;
+        return;
+    }
 	
 	d_encByL3[node] = &(fi->second->Q3());
-	
 }
 
 sbcp::amarsi::MotorDriver::Ptr 
@@ -198,9 +232,11 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
                                        int16_t expectedTsInMs) {
 
 	if (!d_bus) {
-		throw std::runtime_error("SBCPQueue::OpenAndConfigureMotorDriver() Can't load bus due to missing configuration.");
+		throw std::runtime_error("SBCPQueue::OpenAndConfigureMotorDriver() Can't"
+                                 " load bus due to missing configuration.");
 	} else {
-		std::cout << "SBCPQueue::OpenAndConfigureMotorDriver() Bus Workflow: "<< d_bus->CurrentWorkflow() << std::endl;
+		std::cout << "SBCPQueue::OpenAndConfigureMotorDriver() Bus Workflow: "
+            << d_bus->CurrentWorkflow() << std::endl;
 	}
 
 	sbcp::amarsi::MotorDriver::Ptr  res = d_bus->OpenDevice<sbcp::amarsi::MotorDriver>(def.BoardID());
@@ -220,6 +256,41 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
 	                   expectedTsInMs,
 	                   res->Motor2());*/
 
+	/** This is for debugging purpose *
+	
+	// Smooth position mode
+	res->Motor1().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
+	res->Motor2().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
+
+	res->Motor1().SmoothPositionUpdate().Set(5);
+
+	res->Motor1().MaxTorque().Set(300);
+	res->Motor1().MaxSpeed().Set(32000);
+	res->Motor1().MaxAcceleration().Set(800);
+
+	res->Motor1().Preload().Set(1332);
+
+	res->Motor1().Stiffness().Set(0);
+	res->Motor1().Damping().Set(0);
+	
+	res->Motor1().PGain().Set(1600);
+	res->Motor1().IGain().Set(1600);
+	res->Motor1().DGain().Set(1600);
+
+	res->Motor2().SmoothPositionUpdate().Set(5);
+
+	res->Motor2().MaxTorque().Set(300);
+	res->Motor2().MaxSpeed().Set(32000);
+	res->Motor2().MaxAcceleration().Set(800);
+
+	res->Motor2().Preload().Set(1332);
+
+	res->Motor2().Stiffness().Set(0);
+	res->Motor2().Damping().Set(0);
+	
+	res->Motor2().PGain().Set(1600);
+	res->Motor2().IGain().Set(1600);
+	res->Motor2().DGain().Set(1600);/* */
 
 	return res;
 }
@@ -235,10 +306,11 @@ void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
 		throw std::runtime_error("Unknown motor parameter group '" + paramName + "'" );
 	}
 
+    motor.MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
+
 	motor.PGain().Set(params->PGain());
 	motor.IGain().Set(params->IGain());
-	motor.DGain().Set(params->DGain());
-	
+	motor.DGain().Set(params->DGain());	
 
 	motor.Stiffness().Set(params->Stiffness());
 	motor.Damping().Set(params->Damping());
@@ -249,8 +321,6 @@ void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
 	motor.MaxAcceleration().Set(params->MaxAcceleration());
 
 	motor.SmoothPositionUpdate().Set(expectedTsInMs);
-
-
 }
 
 
