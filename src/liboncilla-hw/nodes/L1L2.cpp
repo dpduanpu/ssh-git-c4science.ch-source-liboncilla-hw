@@ -47,6 +47,7 @@ double L1L2::nodeToQueueJointPosition(){
 		hwDownJointAngle = d_isReversed ? ( d_motorPositionLimit * (1.0 - userDownJointAngle ) )
 		                                : ( d_motorPositionLimit * userDownJointAngle );
 	}
+//std::cout << "L1L2::nodeToQueueJointPosition(): " << hwDownJointAngle << std::endl;
 	return hwDownJointAngle;
 }
 

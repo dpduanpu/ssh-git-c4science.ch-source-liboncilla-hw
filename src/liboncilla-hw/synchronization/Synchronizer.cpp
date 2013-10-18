@@ -16,13 +16,13 @@ Synchronizer::Synchronizer(const Config & config)
 	, d_timestep(config.Main().Timestep() * 1.0e-3)
 	, d_priority(config.Main().MainPriority())
 	, d_sbcpQueue(config)
-//	, d_rbioQueue(config.Main().RBIOPriority())
+	, d_rbioQueue(config.Main().RBIOPriority())
 {
 	CheckMainConfig(config.Main());
 	Init();
 	//TODO bad bad pratice new queue should be added automatically to this list.
 	d_queues.push_back(&d_sbcpQueue);
-	//d_queues.push_back(&d_rbioQueue);
+	d_queues.push_back(&d_rbioQueue);
 }
 
 void Synchronizer::Init(){
@@ -147,7 +147,7 @@ void Synchronizer::WaitForProcessAsyncPrimpl(){
 		--maxTrials;
 		if(maxTrials == 0) {
 			std::ostringstream os;
-			os << "SBCP communication did not finished after " << 20
+			os << "SBCP communication did not finished after " << maxTrials
 			   << " timesteps. We abort everything";
 			throw std::runtime_error(os.str());
 		}
@@ -168,19 +168,34 @@ void Synchronizer::RegisterTrunk(const Trunk::Ptr& node){
 }
 
 void Synchronizer::RegisterL0(rci::oncilla::Leg l , const L0::Ptr& node){
-	//d_rbioQueue.RegisterL0(l,node);
+	d_rbioQueue.RegisterL0(l,node);
 	d_sbcpQueue.RegisterL0(l,node);
 }
 
 void Synchronizer::RegisterL1(rci::oncilla::Leg l , const L1L2::Ptr& node){
+    if (node == NULL) {
+        // TODO: Logging/Warning
+        std::cout << "Ignoring L1 node of leg "<<l<<". Is it connected?"<<std::endl;
+        return; // Node is missing - board might be disconnected
+    }
 	d_sbcpQueue.RegisterL1(l,node);
 }
 
-void Synchronizer::RegisterL2(rci::oncilla::Leg l , const L1L2::Ptr& node){
+void Synchronizer::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr& node){
+    if (node == NULL) {
+        // TODO: Logging/Warning
+        std::cout << "Ignoring L2 node of leg "<<l<<". Is it connected?"<<std::endl;
+        return; // Node is missing - board might be disconnected
+    }
 	d_sbcpQueue.RegisterL2(l,node);
 }
 
 void Synchronizer::RegisterL3(rci::oncilla::Leg l , const L3::Ptr& node){
+    if (node == NULL) {
+        // TODO: Logging/Warning
+        std::cout << "Ignoring L3 node of leg "<<l<<". Is it connected?"<<std::endl;
+        return; // Node is missing - board might be disconnected
+    }
 	d_sbcpQueue.RegisterL3(l,node);
 }
 
@@ -199,3 +214,4 @@ bool Synchronizer::IsFinished(const Queue& q){
 
 } //namespace hw
 } //namespace liboncilla
+
