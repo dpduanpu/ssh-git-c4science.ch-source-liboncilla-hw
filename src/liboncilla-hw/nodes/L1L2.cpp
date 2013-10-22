@@ -62,7 +62,7 @@ bool L1L2::setJointTorque(JointTorquesPtr position){
 
 void L1L2::queueToNodeJointPosition(int16_t magneticEncoderVal, 
                                     int16_t magneticEncoderStatus, 
-                                    int16_t motorPosition){
+                                    int16_t motorPosition) {
 	
 	// We do the conversion between the hardware and liboncilla-coordinates here	
 	double userUpJointAngle = 0.0;

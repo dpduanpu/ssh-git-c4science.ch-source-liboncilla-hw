@@ -36,7 +36,6 @@ void RBIOQueue::UpstreamData(){
 }
 
 void RBIOQueue::PerformIO(){
-    std::cout << "RBIOQueue::PerformIO()" << std::endl;
 	xeno_call(rt_task_sleep_until, d_nextDate);
 }
 
