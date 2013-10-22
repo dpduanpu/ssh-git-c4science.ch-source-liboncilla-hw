@@ -14,16 +14,14 @@
 #include <libsbcp/bus/ScheduledWorkflow.h>
 #include <libsbcp/devices/amarsi/MotorDriver.h>
 
-
 namespace liboncilla {
 namespace hw {
-
 
 class Config;
 class BrushlessParameterGroup;
 class MotorDriverSection;
 
-class SBCPQueue : public Queue {
+class SBCPQueue: public Queue {
 public:
 	SBCPQueue(const liboncilla::hw::Config & config);
 	virtual ~SBCPQueue();
@@ -43,36 +41,33 @@ public:
 
 private:
 	//std::tr1::shared_ptr<sbcp::amarsi::MotorDriver> d_motordrivers[4];
-	
-	typedef std::map<liboncilla::hw::L0::Ptr, sbcp::amarsi::MotorDriver::Ptr > MotorDriverByL0;
-	
-	struct MotorAndEncoder{
-		sbcp::amarsi::MotorDriver::Motor           * motor;
+
+	typedef std::map<liboncilla::hw::L0::Ptr, sbcp::amarsi::MotorDriver::Ptr> MotorDriverByL0;
+
+	struct MotorAndEncoder {
+		sbcp::amarsi::MotorDriver::Motor * motor;
 		sbcp::amarsi::MotorDriver::MagneticEncoder * encoder;
 	};
 
-	typedef std::map<liboncilla::hw::L1L2::Ptr, MotorAndEncoder > MotorAndEncoderByL1L2;
-	typedef std::map<liboncilla::hw::L3::Ptr , sbcp::amarsi::MotorDriver::MagneticEncoder *> MagneticEncoderByL3;
+	typedef std::map<liboncilla::hw::L1L2::Ptr, MotorAndEncoder> MotorAndEncoderByL1L2;
+	typedef std::map<liboncilla::hw::L3::Ptr,
+			sbcp::amarsi::MotorDriver::MagneticEncoder *> MagneticEncoderByL3;
 
 	typedef std::map<rci::oncilla::Leg, sbcp::amarsi::MotorDriver::Ptr> MotordriverByLeg;
 
-
 	void SetMotorParameters(const BrushlessParameterGroup & paramGroup,
-	                        const std::string & paramName,
-	                        int16_t expectedTsInMs,
-	                        sbcp::amarsi::MotorDriver::Motor & motor);
+			const std::string & paramName, int16_t expectedTsInMs,
+			sbcp::amarsi::MotorDriver::Motor & motor);
 
-	sbcp::amarsi::MotorDriver::Ptr OpenAndConfigureMotorDriver(const MotorDriverSection & def, 
-	                                                           const BrushlessParameterGroup & config,
-	                                                           int16_t expectedTsInMs);
+	sbcp::amarsi::MotorDriver::Ptr OpenAndConfigureMotorDriver(
+			const MotorDriverSection & def,
+			const BrushlessParameterGroup & config, int16_t expectedTsInMs);
 
-	MotorDriverByL0       d_mdvByL0;
+	MotorDriverByL0 d_mdvByL0;
 	MotorAndEncoderByL1L2 d_motAndEncByL1L2;
-	MagneticEncoderByL3   d_encByL3;
+	MagneticEncoderByL3 d_encByL3;
 
 	MotordriverByLeg d_motordrivers;
-
-
 
 	std::tr1::shared_ptr<sbcp::Bus> d_bus;
 };

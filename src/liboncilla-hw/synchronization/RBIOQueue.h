@@ -16,7 +16,7 @@
 namespace liboncilla {
 namespace hw {
 
-class RBIOQueue : public Queue{
+class RBIOQueue: public Queue {
 public:
 	RBIOQueue(unsigned int priority);
 	virtual ~RBIOQueue();
@@ -28,12 +28,12 @@ public:
 	virtual void DeinitializeIO();
 
 	void RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node);
-private :
+private:
 	typedef std::vector<std::string> ServoNameByIndex;
-	typedef std::map<L0::Ptr,Servo::Ptr> ServoByNode;
+	typedef std::map<L0::Ptr, Servo::Ptr> ServoByNode;
 
 	ServoGenerator::ServoByName d_servos;
-	ServoByNode             d_servoByNode;
+	ServoByNode d_servoByNode;
 	RTIME d_nextDate;
 };
 

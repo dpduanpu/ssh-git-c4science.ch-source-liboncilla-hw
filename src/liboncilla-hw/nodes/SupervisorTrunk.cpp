@@ -12,7 +12,7 @@ SupervisorTrunk::~SupervisorTrunk() {
 }
 
 PosePtr SupervisorTrunk::getPose() const {
-    NOT_IMPLEMENTED_STUB(SupervisorTrunk, getPose);
+	NOT_IMPLEMENTED_STUB(SupervisorTrunk, getPose);
 }
 
 } /* namespace hw */

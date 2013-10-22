@@ -11,48 +11,49 @@
 namespace liboncilla {
 namespace hw {
 
-RBIOQueue::RBIOQueue(unsigned int priority)
-	: Queue(priority,true)
-	, d_nextDate(0){
+RBIOQueue::RBIOQueue(unsigned int priority) :
+		Queue(priority, true), d_nextDate(0) {
 	ServoGenerator g;
 	g.LoadAllFiles();
 	g.CreateServoFromDefinition(d_servos);
 }
 
-RBIOQueue::~RBIOQueue(){
+RBIOQueue::~RBIOQueue() {
 }
 
-void RBIOQueue::DownstreamData(){
+void RBIOQueue::DownstreamData() {
 	d_nextDate = rt_timer_read() + 20e6;
-	for(ServoByNode::iterator s = d_servoByNode.begin();
-	    s != d_servoByNode.end();
-	    ++s){
+	for (ServoByNode::iterator s = d_servoByNode.begin();
+			s != d_servoByNode.end(); ++s) {
 		s->second->SetCommand(s->first->getLastPositionCommand()->deg(0));
 	}
 }
 
-void RBIOQueue::UpstreamData(){
+void RBIOQueue::UpstreamData() {
 	//nothing to do
 }
 
-void RBIOQueue::PerformIO(){
+void RBIOQueue::PerformIO() {
 	xeno_call(rt_task_sleep_until, d_nextDate);
 }
 
-void RBIOQueue::InitializeIO(){
+void RBIOQueue::InitializeIO() {
 	//nothing to do
 }
 
-void RBIOQueue::DeinitializeIO(){
+void RBIOQueue::DeinitializeIO() {
 	//nothing to do
 }
 
-void RBIOQueue::RegisterL0(rci::oncilla::Leg l , const L0::Ptr& node){
+void RBIOQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr& node) {
 
-	ServoGenerator::ServoByName::const_iterator fi = d_servos.find(LegPrefix(l));
+	ServoGenerator::ServoByName::const_iterator fi = d_servos.find(
+			LegPrefix(l));
 
-	if ( fi == d_servos.end() ) {
-		throw std::runtime_error("Could not find suitable device for servo '" + LegPrefix(l) + "'.");
+	if (fi == d_servos.end()) {
+		throw std::runtime_error(
+				"Could not find suitable device for servo '" + LegPrefix(l)
+						+ "'.");
 	}
 
 	d_servoByNode[node] = fi->second;

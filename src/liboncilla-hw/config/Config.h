@@ -10,18 +10,16 @@
 #include <liboncilla-hw/config/MainSection.h>
 #include <liboncilla-hw/config/MotorSection.h>
 
-
 namespace liboncilla {
 namespace hw {
 
-class Config : public options::Config {
+class Config: public options::Config {
 public:
 	Config();
 	virtual ~Config();
 
 	BCPP_ADD_SUBSECTION(MainSection,Main,"main","Main settings for liboncilla-hw")
 	BCPP_ADD_SUBSECTION(MotorSection,Motors,"motor","Section for motor configuration")
-
 
 };
 

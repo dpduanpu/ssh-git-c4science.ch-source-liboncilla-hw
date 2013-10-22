@@ -14,10 +14,10 @@ using namespace rci;
 class SupervisorTrunk: public rci::oncilla::SupervisorTrunk {
 public:
 	typedef boost::shared_ptr<SupervisorTrunk> Ptr;
-    SupervisorTrunk();
-    virtual ~SupervisorTrunk();
+	SupervisorTrunk();
+	virtual ~SupervisorTrunk();
 
-    virtual PosePtr getPose() const;
+	virtual PosePtr getPose() const;
 };
 
 } /* namespace hw */
