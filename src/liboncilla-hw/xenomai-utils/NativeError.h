@@ -14,12 +14,12 @@ namespace hw {
 
 class NativeError {
 public:
-	NativeError(const std::string & whatStr,int error);
-	virtual ~NativeError() throw();
+	NativeError(const std::string & whatStr, int error);
+	virtual ~NativeError() throw ();
 
-	virtual const char * what() const throw();
+	virtual const char * what() const throw ();
 
-private :
+private:
 	std::string d_what;
 };
 
