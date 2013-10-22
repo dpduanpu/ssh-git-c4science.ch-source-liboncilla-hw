@@ -206,6 +206,7 @@ void Synchronizer::WakeIdleQueues(){
 void Synchronizer::FetchIdleQueues(){
 	xeno_call(rt_event_wait,d_event.get(),0,&d_idleQueueMask,EV_ANY,TM_NONBLOCK);
 	d_idleQueueMask ^= Queue::AllQueueMask();
+    std::cout << "d_idleQueueMask: "<<d_idleQueueMask<< std::endl;
 }
 
 bool Synchronizer::IsFinished(const Queue& q){

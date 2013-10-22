@@ -56,19 +56,20 @@ SBCPQueue::~SBCPQueue(){
 }
 
 void SBCPQueue::DownstreamData(){
-    std::cout << "------ SBCPQueue::DownstreamData() ------" << std::endl;
+    //std::cout << "------ SBCPQueue::DownstreamData() ------" << std::endl;
 	for(MotorAndEncoderByL1L2::const_iterator motAndEnc = d_motAndEncByL1L2.begin();
 	    motAndEnc != d_motAndEncByL1L2.
 end();
 	    ++motAndEnc) { 
 		    motAndEnc->second.motor->GoalPosition().Set(motAndEnc->first->nodeToQueueJointPosition());
-            std::cout << "set position: " << motAndEnc->first->nodeToQueueJointPosition() << std::endl;
+            //std::cout << "set position: " << motAndEnc->first->nodeToQueueJointPosition() << std::endl;
+            //std::cout << " set position: " << motAndEnc->second.motor->GoalPosition().Get() << std::endl;
     }
-    std::cout << "------ SBCPQueue::DownstreamData() ------" << std::endl << std::endl;
+    //std::cout << "------ SBCPQueue::DownstreamData() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::UpstreamData(){
-    std::cout << "------ SBCPQueue::UpstreamData() ------" << std::endl;
+    //std::cout << "------ SBCPQueue::UpstreamData() ------" << std::endl;
 	for(MotorAndEncoderByL1L2::const_iterator motAndEnc = d_motAndEncByL1L2.begin();
 	    motAndEnc != d_motAndEncByL1L2.end();
 	    ++motAndEnc) { 
@@ -100,12 +101,12 @@ void SBCPQueue::UpstreamData(){
 		                                     (enc->second->PositionAndStatus().Get() & 0xc000) >> 14);
         }
 	}
-    std::cout << "------ SBCPQueue::UpstreamData() ------" << std::endl << std::endl;
+    //std::cout << "------ SBCPQueue::UpstreamData() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::PerformIO(){
 
-    std::cout << "------ SBCPQueue::PerformIO() ------" << std::endl;
+    //std::cout << "------ SBCPQueue::PerformIO() ------" << std::endl;
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
 	// Start transfer
@@ -113,11 +114,11 @@ void SBCPQueue::PerformIO(){
 
 	// Wait for transfer to complete
 	w.WaitForTransfersCompletion();	
-    std::cout << "------ SBCPQueue::PerformIO() ------" << std::endl << std::endl;
+    //std::cout << "------ SBCPQueue::PerformIO() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::InitializeIO(){
-    std::cout << "------ SBCPQueue::InitializeIO() ------" << std::endl;
+    //std::cout << "------ SBCPQueue::InitializeIO() ------" << std::endl;
 	// Enable scheduled woirkflow
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
@@ -133,14 +134,14 @@ void SBCPQueue::InitializeIO(){
 	        w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(md->second));
         }
 	}
-    std::cout << "------ SBCPQueue::InitializeIO() ------" << std::endl << std::endl;
+    //std::cout << "------ SBCPQueue::InitializeIO() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::DeinitializeIO(){
-    std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl;
+   //std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl;
 	// Disable scheduled woirkflow
 	this->d_bus->Lazy();
-    std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl << std::endl;
+   // std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl << std::endl;
 }
 
 void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node){
@@ -154,8 +155,9 @@ void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node){
 }
 
 void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
-	bool isRightLeg = ((l == rci::oncilla::RIGHT_FORE) || (l == rci::oncilla::RIGHT_HIND))? true: false;
+	bool isLeftLeg = ((l == rci::oncilla::LEFT_FORE) || (l == rci::oncilla::LEFT_HIND))? true: false;
 	bool isHip = true;
+
 	//check if this map contains this leg
 	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
 	if(fi == d_motordrivers.end()){ 
@@ -164,11 +166,11 @@ void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
 
     if (fi->second == NULL) { 
         // TODO: Throw?
-        std::cout << "SBCPQueue::RegisterL1: Ignoring L1 of leg "<<l<<". Is it connected?"<<std::endl;
+        std::cout << "SBCPQueue::RegisterL1: Ignoring L1 of leg "<<LegPrefix(l)<<". Is it connected?"<<std::endl;
         return;
     }
 
-	node->initialize(isRightLeg,
+	node->initialize(isLeftLeg,
 	                 isHip, 
 	                 fi->second->Motor1().PositionLimit().Get() & 0x7fff,
 	                 fi->second->Motor1().PresentPosition().Get());
@@ -183,8 +185,8 @@ void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node){
 
 void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node){
 	bool isRightLeg = ((l == rci::oncilla::RIGHT_FORE) || (l == rci::oncilla::RIGHT_HIND))? true: false;
-
 	bool isHip = false;
+
 	//check if this map contains this leg
 	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
 	if(fi == d_motordrivers.end()){ 
@@ -193,7 +195,7 @@ void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node){
 
     if (fi->second == NULL) { 
         // TODO: Throw?
-        std::cout << "SBCPQueue::RegisterL2: Ignoring L2 of leg "<<l<<". Is it connected?"<<std::endl;
+        std::cout << "SBCPQueue::RegisterL2: Ignoring L2 of leg "<<LegPrefix(l)<<". Is it connected?"<<std::endl;
         return;
     }
 
@@ -219,7 +221,7 @@ void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node){
 
     if (fi->second == NULL) { 
         // TODO: Throw?
-        std::cout << "SBCPQueue::RegisterL3: Ignoring L3 of leg "<<l<<". Is it connected?"<<std::endl;
+        std::cout << "SBCPQueue::RegisterL3: Ignoring L3 of leg "<<LegPrefix(l)<<". Is it connected?"<<std::endl;
         return;
     }
 	
