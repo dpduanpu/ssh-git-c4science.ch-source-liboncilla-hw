@@ -18,7 +18,7 @@ class Queue;
 
 class Synchronizer: public rci::oncilla::Synchronizer {
 public:
-	typedef boost::shared_ptr<::liboncilla::hw::Synchronizer> Ptr;
+	typedef boost::shared_ptr< ::liboncilla::hw::Synchronizer> Ptr;
 
 	Synchronizer(const Config & config);
 	virtual ~Synchronizer();

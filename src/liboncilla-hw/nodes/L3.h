@@ -9,7 +9,7 @@ namespace hw {
 
 class L3: public rci::oncilla::L3 {
 public:
-	typedef boost::shared_ptr<::liboncilla::hw::L3> Ptr;
+	typedef boost::shared_ptr< ::liboncilla::hw::L3> Ptr;
 
 	L3(const std::string & name);
 	virtual ~L3();
