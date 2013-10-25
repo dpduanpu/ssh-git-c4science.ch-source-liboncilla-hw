@@ -16,7 +16,7 @@ namespace hw {
 
 SBCPQueue::SBCPQueue(const Config & config) :
 		Queue(config.Main().SBCPPriority(), true), d_bus() {
-
+    //std::cout << "SBCPQueue::SBCPQueue()" << std::endl;
 	sbcp::Config sbcpConfig;
 	sbcpConfig.LoadAllFiles();
 
@@ -51,6 +51,7 @@ SBCPQueue::SBCPQueue(const Config & config) :
 }
 
 SBCPQueue::~SBCPQueue() {
+    //std::cout << "SBCPQueue::~SBCPQueue()" << std::endl;
 }
 
 void SBCPQueue::DownstreamData() {
@@ -104,8 +105,7 @@ void SBCPQueue::UpstreamData() {
 }
 
 void SBCPQueue::PerformIO() {
-
-	//std::cout << "------ SBCPQueue::PerformIO() ------" << std::endl;
+    // std::cout << "------ SBCPQueue::PerformIO() ------" << std::endl;
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
 	// Start transfer
@@ -117,7 +117,7 @@ void SBCPQueue::PerformIO() {
 }
 
 void SBCPQueue::InitializeIO() {
-	//std::cout << "------ SBCPQueue::InitializeIO() ------" << std::endl;
+	// std::cout << "------ SBCPQueue::InitializeIO() ------" << std::endl;
 	// Enable scheduled woirkflow
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
@@ -139,7 +139,7 @@ void SBCPQueue::InitializeIO() {
 }
 
 void SBCPQueue::DeinitializeIO() {
-	//std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl;
+	// std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl;
 	// Disable scheduled woirkflow
 	this->d_bus->Lazy();
 	// std::cout << "------ SBCPQueue::DeinitializeIO() ------" << std::endl << std::endl;
@@ -245,6 +245,9 @@ void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node) {
 sbcp::amarsi::MotorDriver::Ptr SBCPQueue::OpenAndConfigureMotorDriver(
 		const MotorDriverSection & def, const BrushlessParameterGroup & params,
 		int16_t expectedTsInMs) {
+    std::cout << "SBCPQueue::OpenAndConfigureMotorDriver()" << std::endl;
+
+    this->d_bus->Lazy();
 
 	if (!d_bus) {
 		throw std::runtime_error(
@@ -260,53 +263,37 @@ sbcp::amarsi::MotorDriver::Ptr SBCPQueue::OpenAndConfigureMotorDriver(
 
 	if (!res) {
 		// board is just not here, buit we will throw later if it is required.
+		std::cout << "SBCPQueue::OpenAndConfigureMotorDriver() Ignoring board, "
+                << "doesn't seem to be connected." << std::endl;
 		return res;
 	}
 
-	/*SetMotorParameters(params,
-	 def.M1Params(),
-	 expectedTsInMs,
-	 res->Motor1());
-	 SetMotorParameters(params,
-	 def.M2Params(),
-	 expectedTsInMs,
-	 res->Motor2());*/
+    bool m1Calibrated(GetCalibrationStatus(res->Motor1(),1));
+	bool m2Calibrated(GetCalibrationStatus(res->Motor2(),2));
+	if(! (m1Calibrated || m2Calibrated)){
+		res->CalibrateMotors();
+	} else {
+		std::cout << "Motor already calibrated"<<std::endl;
+	}
 
-	/** This is for debugging purpose *
+	while(!(m1Calibrated && m2Calibrated)){
+		usleep(1e5);
+		m1Calibrated = GetCalibrationStatus(res->Motor1(), 1);
+		m2Calibrated = GetCalibrationStatus(res->Motor2(), 2);
+	}
+	std::cout << "Motor calibrated" << std::endl << std::endl;
 
-	 // Smooth position mode
-	 res->Motor1().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
-	 res->Motor2().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
+	SetMotorParameters(params, def.M1Params(), expectedTsInMs, res->Motor1());
+	SetMotorParameters(params, def.M2Params(), expectedTsInMs, res->Motor2());
 
-	 res->Motor1().SmoothPositionUpdate().Set(5);
 
-	 res->Motor1().MaxTorque().Set(300);
-	 res->Motor1().MaxSpeed().Set(32000);
-	 res->Motor1().MaxAcceleration().Set(800);
+	res->Motor1().MaxTorque().Set(300); // 300
+	res->Motor1().MaxSpeed().Set(20000); // 32000
+	res->Motor1().MaxAcceleration().Set(400); // 800
 
-	 res->Motor1().Preload().Set(1332);
-
-	 res->Motor1().Stiffness().Set(0);
-	 res->Motor1().Damping().Set(0);
-
-	 res->Motor1().PGain().Set(1600);
-	 res->Motor1().IGain().Set(1600);
-	 res->Motor1().DGain().Set(1600);
-
-	 res->Motor2().SmoothPositionUpdate().Set(5);
-
-	 res->Motor2().MaxTorque().Set(300);
-	 res->Motor2().MaxSpeed().Set(32000);
-	 res->Motor2().MaxAcceleration().Set(800);
-
-	 res->Motor2().Preload().Set(1332);
-
-	 res->Motor2().Stiffness().Set(0);
-	 res->Motor2().Damping().Set(0);
-
-	 res->Motor2().PGain().Set(1600);
-	 res->Motor2().IGain().Set(1600);
-	 res->Motor2().DGain().Set(1600);/* */
+	res->Motor2().MaxTorque().Set(300);
+	res->Motor2().MaxSpeed().Set(20000);
+	res->Motor2().MaxAcceleration().Set(400);
 
 	return res;
 }
@@ -314,6 +301,7 @@ sbcp::amarsi::MotorDriver::Ptr SBCPQueue::OpenAndConfigureMotorDriver(
 void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
 		const std::string & paramName, int16_t expectedTsInMs,
 		sbcp::amarsi::MotorDriver::Motor & motor) {
+    std::cout << "SBCPQueue::SetMotorParameters()" << std::endl;
 	//due to a bad design of biorob-cpp dynamic section we should do this
 	std::tr1::shared_ptr<BrushlessParameterSection> params =
 			const_cast<BrushlessParameterGroup &>(paramGroup).SubSection(
@@ -340,6 +328,11 @@ void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
 	motor.MaxAcceleration().Set(params->MaxAcceleration());
 
 	motor.SmoothPositionUpdate().Set(expectedTsInMs);
+}
+
+bool SBCPQueue::GetCalibrationStatus(sbcp::amarsi::MotorDriver::Motor & m, int number) {
+	uint16_t val(m.MotorControlMode().Get());
+	return val & (1 << 9);
 }
 
 } /* namespace hw */

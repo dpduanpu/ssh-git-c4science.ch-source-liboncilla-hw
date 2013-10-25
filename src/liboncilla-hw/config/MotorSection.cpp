@@ -33,7 +33,7 @@ MotorDriverSection::~MotorDriverSection() {
 MotorDriverGroup::MotorDriverGroup(options::Section::Ptr s) :
 		options::ConfigSection(s), d_shLeftFore(Section()), d_shRightFore(
 				Section()), d_shLeftHind(Section()), d_shRightHind(Section()) {
-	//sets default if od the boards
+	// sets default if od the boards
 	LeftFore().BoardIDOption()->SetValue(1);
 	RightFore().BoardIDOption()->SetValue(2);
 	LeftHind().BoardIDOption()->SetValue(3);
