@@ -48,7 +48,7 @@ public:
 	/**
 	 * Callback to de-initialize things
 	 */
-	virtual void DeinitializeIO() = 0;
+	virtual void DeinitializeIO() {};
 
 	void StartTask();
 

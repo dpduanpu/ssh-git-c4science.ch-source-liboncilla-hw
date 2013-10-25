@@ -63,6 +63,8 @@ private:
 			const MotorDriverSection & def,
 			const BrushlessParameterGroup & config, int16_t expectedTsInMs);
 
+    inline bool GetCalibrationStatus(sbcp::amarsi::MotorDriver::Motor &, int);
+
 	MotorDriverByL0 d_mdvByL0;
 	MotorAndEncoderByL1L2 d_motAndEncByL1L2;
 	MagneticEncoderByL3 d_encByL3;
