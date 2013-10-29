@@ -16,11 +16,11 @@ using namespace rci;
  */
 class SupervisorL4: public rci::oncilla::SupervisorL4 {
 public:
-    SupervisorL4(const std::string & name);
-    virtual ~SupervisorL4();
+	SupervisorL4(const std::string & name);
+	virtual ~SupervisorL4();
 
-    virtual PosePtr getPose() const;
-    virtual ForcesPtr getForces() const;
+	virtual PosePtr getPose() const;
+	virtual ForcesPtr getForces() const;
 
 };
 

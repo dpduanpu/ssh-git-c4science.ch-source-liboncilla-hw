@@ -13,12 +13,12 @@ namespace hw {
  */
 class SupervisorWorld: public rci::oncilla::SupervisorWorld {
 public:
-    SupervisorWorld();
-    virtual ~SupervisorWorld();
+	SupervisorWorld();
+	virtual ~SupervisorWorld();
 
-    void reset();
+	void reset();
 
-    std::string print();
+	std::string print();
 
 };
 

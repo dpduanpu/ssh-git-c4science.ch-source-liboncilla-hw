@@ -9,20 +9,20 @@
  * Liboncilla backend for the Oncilla hardware, providing all resource node
  * implementations connected to the hardware drivers.
  */
-class HWOncillaBackend : public OncillaBackend {
+class HWOncillaBackend: public OncillaBackend {
 public:
 	HWOncillaBackend();
 	virtual ~HWOncillaBackend();
 
 	virtual boost::shared_ptr<rci::oncilla::Synchronizer> CreateSynchronizer();
-	virtual boost::shared_ptr<rci::oncilla::L0> CreateL0(rci::oncilla::Leg ,
-	                                                     const std::string&);
-	virtual boost::shared_ptr<rci::oncilla::L1L2> CreateL1(rci::oncilla::Leg ,
-	                                                       const std::string&);
-	virtual boost::shared_ptr<rci::oncilla::L1L2> CreateL2(rci::oncilla::Leg ,
-	                                                       const std::string &);
-	virtual boost::shared_ptr<rci::oncilla::L3> CreateL3(rci::oncilla::Leg ,
-	                                                     const std::string &);
+	virtual boost::shared_ptr<rci::oncilla::L0> CreateL0(rci::oncilla::Leg,
+			const std::string&);
+	virtual boost::shared_ptr<rci::oncilla::L1L2> CreateL1(rci::oncilla::Leg,
+			const std::string&);
+	virtual boost::shared_ptr<rci::oncilla::L1L2> CreateL2(rci::oncilla::Leg,
+			const std::string &);
+	virtual boost::shared_ptr<rci::oncilla::L3> CreateL3(rci::oncilla::Leg,
+			const std::string &);
 	virtual boost::shared_ptr<rci::oncilla::Trunk> CreateTrunk();
 
 	virtual boost::shared_ptr<rci::oncilla::SupervisorTrunk> CreateSupervisorTrunk();
@@ -30,10 +30,7 @@ public:
 	virtual boost::shared_ptr<rci::oncilla::SupervisorWorld> CreateSupervisorWorld();
 
 	virtual boost::shared_ptr<rci::oncilla::SupervisorL4> CreateSupervisorL4(
-	        rci::oncilla::Leg , const std::string&);
-
-
-
+			rci::oncilla::Leg, const std::string&);
 
 private:
 	static const bool NORMALIZED = true;
@@ -47,7 +44,7 @@ private:
 	static const unsigned int HW_RANGE_L2_FORE = 1850; /// \todo CHECK
 	static const unsigned int HW_RANGE_L2_HIND = 2200; /// \todo CHECK
 
-	static const double ENCODER_RATIO_L1 = 25.0/12.0; /// \todo CHECK
+	static const double ENCODER_RATIO_L1 = 25.0 / 12.0; /// \todo CHECK
 	static const double ENCODER_RATIO_L2 = 1.0; /// \todo CHECK
 	static const double ENCODER_RATIO_L3 = 1.0; /// \todo CHECK
 
@@ -66,5 +63,5 @@ private:
 	bool IsForeLeg(rci::oncilla::Leg);
 
 	liboncilla::hw::Synchronizer::Ptr d_synchronizer;
-	liboncilla::hw::Config            d_config;
+	liboncilla::hw::Config d_config;
 };

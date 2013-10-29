@@ -9,10 +9,8 @@
 
 #include <liboncilla-hw/xenomai-utils/Utils.h>
 
-
 namespace liboncilla {
 namespace hw {
-
 
 /**
  * Represent a thread to perform IO, RAII style.
@@ -24,36 +22,41 @@ public:
 	/**
 	 * /param preferNonRt: use callbacks which are not supposed to run on the realtime Kernel (default: true)
 	 */
-	Queue(unsigned int priority,bool preferNonRt);
+	Queue(unsigned int priority, bool preferNonRt);
 	virtual ~Queue();
 
 	/**
 	 * Sends the data from liboncilla-hw to the hardware
 	 */
 	virtual void DownstreamData() = 0;
+
 	/**
 	 * Sends the data from hardware to liboncilla-hw
 	 */
-	virtual void UpstreamData()   = 0;
+	virtual void UpstreamData() = 0;
 
 	/**
 	 * Callback function that should perform the IO.
 	 */
-	virtual void PerformIO()      = 0;
+	virtual void PerformIO() = 0;
 
 	/**
-	 * Callback to init things
+	 * Callback to initialize things
 	 */
-	virtual void InitializeIO()   = 0;
+	virtual void InitializeIO() = 0;
+
+	/**
+	 * Callback to de-initialize things
+	 */
+	virtual void DeinitializeIO() {};
 
 	void StartTask();
-	void StopTask();
 
+	void StopTask();
 
 	unsigned long Mask() const;
 
-
-private :
+private:
 	static void TaskEntryPoint(void * itself);
 
 	void Loop();
@@ -72,10 +75,10 @@ inline unsigned long Queue::Mask() const {
 }
 
 inline unsigned long Queue::AllQueueMask() {
-	if(s_nbQueues == MaxNbQueues) {
+	if (s_nbQueues == MaxNbQueues) {
 		return -1;
 	}
-	return (1 << s_nbQueues) - 1 ;
+	return (1 << s_nbQueues) - 1;
 }
 } /* namespace hw */
 } /* namespace liboncilla */

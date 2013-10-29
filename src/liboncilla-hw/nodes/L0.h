@@ -10,8 +10,8 @@ namespace hw {
 class L0: public rci::oncilla::L0 {
 public:
 	typedef boost::shared_ptr<liboncilla::hw::L0> Ptr;
-    L0(const std::string & name);
-    virtual ~L0();
+	L0(const std::string & name);
+	virtual ~L0();
 
 	void queueToNodeForces(int force1, int force2, int force3);
 

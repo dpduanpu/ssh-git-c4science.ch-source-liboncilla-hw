@@ -13,18 +13,16 @@
 namespace liboncilla {
 namespace hw {
 
-
-NativeError::NativeError(const std::string& whatStr , int error){
+NativeError::NativeError(const std::string& whatStr, int error) {
 	std::ostringstream os;
-	os << whatStr << ". Code " << error
-	   << " : " << strerror(error);
+	os << whatStr << ". Code " << error << " : " << strerror(error);
 	d_what = os.str();
 }
 
-NativeError::~NativeError() throw(){
+NativeError::~NativeError() throw () {
 }
 
-const char* NativeError::what() const throw(){
+const char* NativeError::what() const throw () {
 	return d_what.c_str();
 }
 
