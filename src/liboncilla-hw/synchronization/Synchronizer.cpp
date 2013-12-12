@@ -11,13 +11,11 @@ namespace liboncilla {
 namespace hw {
 
 Synchronizer::Synchronizer(const Config & config)
-:
-		rci::oncilla::Synchronizer("Oncilla HW Synchronizer"),
-        d_timestep(config.Main().Timestep() * 1.0e-3),
-        d_priority(config.Main().MainPriority()),
-        d_sbcpQueue(config),
-        d_rbioQueue(config.Main().RBIOPriority()
-        ) {
+	: rci::oncilla::Synchronizer("Oncilla HW Synchronizer")
+	, d_timestep(config.Main().Timestep() * 1.0e-3)
+	, d_priority(config.Main().MainPriority())
+	, d_sbcpQueue(config)
+	, d_rbioQueue(config.Main().RBIOPriority()) {
 
 	CheckMainConfig(config.Main());
 
@@ -43,7 +41,7 @@ void Synchronizer::CheckPriority(unsigned int p, const std::string & name) {
 	if (p > 99) {
 		std::ostringstream os;
 		os << "Unsupported " << name << " of " << p
-				<< " only value between 0 and 99 are supported";
+		   << " only value between 0 and 99 are supported";
 		throw std::runtime_error(os.str());
 	}
 }
@@ -52,7 +50,7 @@ void Synchronizer::CheckMainConfig(const MainSection& config) {
 	std::ostringstream os;
 	if (config.Timestep() < 2) {
 		os << "Unsupported timestep of " << config.Timestep()
-				<< " ms. It should be >= 2ms";
+		   << " ms. It should be >= 2ms";
 		throw std::runtime_error(os.str());
 	}
 
@@ -79,8 +77,9 @@ bool Synchronizer::start() {
 	xeno_call(rt_event_create, e, Queue::EventName, 0, EV_PRIO);
 	d_event = NativeHolder<RT_EVENT>(e);
 
-	for (ListOfQueue::const_iterator q = d_queues.begin(); q != d_queues.end();
-			++q) {
+	for (ListOfQueue::const_iterator q = d_queues.begin();
+	     q != d_queues.end();
+	     ++q) {
 		(*q)->StartTask();
 	}
 	d_idleQueueMask = Queue::AllQueueMask();
@@ -93,8 +92,9 @@ bool Synchronizer::start() {
 }
 
 bool Synchronizer::stop() {
-	for (ListOfQueue::const_iterator q = d_queues.begin(); q != d_queues.end();
-			++q) {
+	for (ListOfQueue::const_iterator q = d_queues.begin(); 
+	     q != d_queues.end();
+	     ++q) {
 		(*q)->StopTask();
 	}
 	d_event = NativeHolder<RT_EVENT>();
@@ -110,8 +110,9 @@ double Synchronizer::lastProcessTimeStep() const {
 }
 
 void Synchronizer::ProcessAsyncPrimpl() {
-	for (ListOfQueue::const_iterator q = d_queues.begin(); q != d_queues.end();
-			++q) {
+	for (ListOfQueue::const_iterator q = d_queues.begin();
+	     q != d_queues.end();
+	     ++q) {
 		if (IsFinished(**q)) {
 			(*q)->DownstreamData();
 		}
@@ -141,13 +142,14 @@ void Synchronizer::WaitForProcessAsyncPrimpl() {
 		if (maxTrials == 0) {
 			std::ostringstream os;
 			os << "SBCP communication did not finished after " << maxTrials
-					<< " timesteps. We abort everything";
+			   << " timesteps. We abort everything";
 			throw std::runtime_error(os.str());
 		}
 	}
 
-	for (ListOfQueue::const_iterator q = d_queues.begin(); q != d_queues.end();
-			++q) {
+	for (ListOfQueue::const_iterator q = d_queues.begin();
+	     q != d_queues.end();
+	     ++q) {
 		if (IsFinished(**q)) {
 			(*q)->UpstreamData();
 		}
@@ -168,7 +170,7 @@ void Synchronizer::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr& node) {
 	if (node == NULL) {
 		// TODO: Logging/Warning
 		std::cout << "Ignoring L1 node of leg " << l << ". Is it connected?"
-				<< std::endl;
+		          << std::endl;
 		return; // Node is missing - board might be disconnected
 	}
 	d_sbcpQueue.RegisterL1(l, node);
@@ -178,7 +180,7 @@ void Synchronizer::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr& node) {
 	if (node == NULL) {
 		// TODO: Logging/Warning
 		std::cout << "Ignoring L2 node of leg " << l << ". Is it connected?"
-				<< std::endl;
+		          << std::endl;
 		return; // Node is missing - board might be disconnected
 	}
 	d_sbcpQueue.RegisterL2(l, node);
@@ -188,7 +190,7 @@ void Synchronizer::RegisterL3(rci::oncilla::Leg l, const L3::Ptr& node) {
 	if (node == NULL) {
 		// TODO: Logging/Warning
 		std::cout << "Ignoring L3 node of leg " << l << ". Is it connected?"
-				<< std::endl;
+		          << std::endl;
 		return; // Node is missing - board might be disconnected
 	}
 	d_sbcpQueue.RegisterL3(l, node);
@@ -200,7 +202,11 @@ void Synchronizer::WakeIdleQueues() {
 
 void Synchronizer::FetchIdleQueues() {
 	xeno_call(rt_event_wait,
-			d_event.get(), 0, &d_idleQueueMask, EV_ANY, TM_NONBLOCK);
+	          d_event.get(), 
+	          0,
+	          &d_idleQueueMask, 
+	          EV_ANY, 
+	          TM_NONBLOCK);
 	d_idleQueueMask ^= Queue::AllQueueMask();
 }
 

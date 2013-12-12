@@ -12,38 +12,38 @@
 namespace liboncilla {
 namespace hw {
 
-class MainSection: public options::ConfigSection {
+class MainSection : public options::ConfigSection {
 public:
 	MainSection(const options::Section::Ptr & base);
 	virtual ~MainSection();
 
 	BCPP_ADD_OPTION(MainPriority,
-			"priority",
-			unsigned int,
-			70,
-			"xenomai priority of the main task, between 0 (lowest) and 99 "
-			"(highest) = is the same priority than a standard linux thread.");
+	                "priority",
+	                unsigned int,
+	                70,
+	                "xenomai priority of the main task, between 0 (lowest) and 99 "
+	                "(highest) = is the same priority than a standard linux thread.");
 
 	BCPP_ADD_OPTION(SBCPPriority,
-			"sbcp-priority",
-			unsigned int,
-			60,
-			"xenomai priority of the sbcp I/O task, between 0 (lowest) and 99 "
-			"(highest) = is the same priority than a standard linux thread.");
+	                "sbcp-priority",
+	                unsigned int,
+	                60,
+	                "xenomai priority of the sbcp I/O task, between 0 (lowest) and 99 "
+	                "(highest) = is the same priority than a standard linux thread.");
 
 	BCPP_ADD_OPTION(RBIOPriority,
-			"rbio-priority",
-			unsigned int,
-			60,
-			"xenomai priority of the rbio I/O task, between 0 (lowest) and 99 "
-			"(highest) = is the same priority than a standard linux thread.");
+	                "rbio-priority",
+	                unsigned int,
+	                60,
+	                "xenomai priority of the rbio I/O task, between 0 (lowest) and 99 "
+	                "(highest) = is the same priority than a standard linux thread.");
 
 	BCPP_ADD_OPTION(Timestep,
-			"timestep",
-			unsigned int,
-			10,
-			"desired timestep desired to run the task in millisecond. Notice "
-			"that oncilla will behave strangly if you do not meet this deadline.");
+	                "timestep",
+	                unsigned int,
+	                10,
+	                "desired timestep desired to run the task in millisecond. Notice "
+	                "that oncilla will behave strangly if you do not meet this deadline.");
 };
 
 } /* namespace hw */

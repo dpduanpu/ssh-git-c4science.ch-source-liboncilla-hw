@@ -13,7 +13,7 @@
 namespace liboncilla {
 namespace hw {
 
-class Config: public options::Config {
+class Config : public options::Config {
 public:
 	Config();
 	virtual ~Config();

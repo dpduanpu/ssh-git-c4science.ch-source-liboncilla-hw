@@ -21,7 +21,7 @@ class Config;
 class BrushlessParameterGroup;
 class MotorDriverSection;
 
-class SBCPQueue: public Queue {
+class SBCPQueue : public Queue {
 public:
 	SBCPQueue(const liboncilla::hw::Config & config);
 	virtual ~SBCPQueue();
@@ -56,12 +56,15 @@ private:
 	typedef std::map<rci::oncilla::Leg, sbcp::amarsi::MotorDriver::Ptr> MotordriverByLeg;
 
 	void SetMotorParameters(const BrushlessParameterGroup & paramGroup,
-			const std::string & paramName, int16_t expectedTsInMs,
-			sbcp::amarsi::MotorDriver::Motor & motor);
+	                        const std::string & paramName, 
+	                        int16_t expectedTsInMs,
+	                        sbcp::amarsi::MotorDriver::Motor & motor);
 
-	sbcp::amarsi::MotorDriver::Ptr OpenAndConfigureMotorDriver(
-			const MotorDriverSection & def,
-			const BrushlessParameterGroup & config, int16_t expectedTsInMs);
+	sbcp::amarsi::MotorDriver::Ptr 
+	OpenAndConfigureMotorDriver(const MotorDriverSection & def,
+	                            const BrushlessParameterGroup & config, 
+	                            int16_t expectedTsInMs);
+
 
     inline bool GetCalibrationStatus(sbcp::amarsi::MotorDriver::Motor &, int);
 
