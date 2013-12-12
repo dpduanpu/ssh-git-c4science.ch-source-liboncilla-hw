@@ -48,6 +48,7 @@ public:
 	/**
 	 * Callback to de-initialize things
 	 */
+	/// \todo make it pure virtual !!!
 	virtual void DeinitializeIO() {};
 
 	void StartTask();
@@ -61,13 +62,13 @@ private:
 
 	void Loop();
 
-	static unsigned int s_nbQueues;
+	static unsigned int       s_nbQueues;
 	const static unsigned int MaxNbQueues;
 
 	NativeHolder<RT_TASK> d_task;
-	const unsigned int d_id;
-	const bool d_preferNonRt;
-	const unsigned int d_priority;
+	const unsigned int    d_id;
+	const bool            d_preferNonRt;
+	const unsigned int    d_priority;
 };
 
 inline unsigned long Queue::Mask() const {

@@ -16,7 +16,7 @@
 namespace liboncilla {
 namespace hw {
 
-class RBIOQueue: public Queue {
+class RBIOQueue : public Queue {
 public:
 	RBIOQueue(unsigned int priority);
 	virtual ~RBIOQueue();

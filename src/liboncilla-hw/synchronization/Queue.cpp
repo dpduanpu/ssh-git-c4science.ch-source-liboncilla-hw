@@ -19,8 +19,10 @@ unsigned int Queue::s_nbQueues(0);
 const unsigned int Queue::MaxNbQueues(8 * sizeof(unsigned long));
 const char * Queue::EventName = "liboncilla-hw synchronization event";
 
-Queue::Queue(unsigned int priority, bool preferNonRt) :
-		d_id(s_nbQueues++), d_preferNonRt(preferNonRt), d_priority(priority) {
+Queue::Queue(unsigned int priority, bool preferNonRt) 
+	: d_id(s_nbQueues++)
+	, d_preferNonRt(preferNonRt)
+	, d_priority(priority) {
 	if (s_nbQueues > MaxNbQueues) {
 		std::ostringstream os;
 		os << "Cannot allocate Queue, maximum allowed : " << MaxNbQueues;
@@ -40,12 +42,14 @@ void Queue::StartTask() {
 	xeno_call(rt_task_create, t, NULL, 0, d_priority, 0);
 	d_task = NativeHolder<RT_TASK>(t);
 
-	this->InitializeIO();
-
+	InitializeIO();
+   
 	log(debug, "Starting task for Queue ", this);
 
-	xeno_call(rt_task_start, d_task.get(), &Queue::TaskEntryPoint,
-			reinterpret_cast<void*>(this));
+	xeno_call(rt_task_start, 
+	          d_task.get(), 
+	          &Queue::TaskEntryPoint,
+	          reinterpret_cast<void*>(this));
 }
 
 void Queue::TaskEntryPoint(void * itself) {
@@ -55,7 +59,7 @@ void Queue::TaskEntryPoint(void * itself) {
 void Queue::StopTask() {
 	log(debug, "Stopping Queue ", this);
 	d_task = NativeHolder<RT_TASK>();
-	this->DeinitializeIO();
+	DeinitializeIO();
 }
 
 void Queue::Loop() {

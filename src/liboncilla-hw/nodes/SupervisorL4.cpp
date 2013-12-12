@@ -3,8 +3,8 @@
 namespace liboncilla {
 namespace hw {
 
-SupervisorL4::SupervisorL4(const std::string & name) :
-		rci::oncilla::SupervisorL4(name) {
+SupervisorL4::SupervisorL4(const std::string & name) 
+	: rci::oncilla::SupervisorL4(name) {
 }
 
 SupervisorL4::~SupervisorL4() {

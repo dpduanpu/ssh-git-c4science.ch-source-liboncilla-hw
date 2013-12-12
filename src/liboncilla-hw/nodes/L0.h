@@ -7,7 +7,7 @@
 namespace liboncilla {
 namespace hw {
 
-class L0: public rci::oncilla::L0 {
+class L0 : public rci::oncilla::L0 {
 public:
 	typedef boost::shared_ptr<liboncilla::hw::L0> Ptr;
 	L0(const std::string & name);

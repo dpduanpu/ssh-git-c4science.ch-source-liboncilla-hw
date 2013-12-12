@@ -11,7 +11,7 @@ using namespace rci;
  * Supervising the trunk in terms of it`s cartesian world coordinates has to
  * be provided by an external motion capturing system.
  */
-class SupervisorTrunk: public rci::oncilla::SupervisorTrunk {
+class SupervisorTrunk : public rci::oncilla::SupervisorTrunk {
 public:
 	typedef boost::shared_ptr<SupervisorTrunk> Ptr;
 	SupervisorTrunk();

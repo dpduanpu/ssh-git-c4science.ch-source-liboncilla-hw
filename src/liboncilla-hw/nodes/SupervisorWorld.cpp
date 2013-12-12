@@ -15,7 +15,7 @@ std::string SupervisorWorld::print() {
 
 void SupervisorWorld::reset() {
 	UNAVAILABLE_INTERFACE("You are not god, You cannot reset this real world !",
-			SupervisorWorld, reset);
+	                      SupervisorWorld, reset);
 }
 
 } /* namespace hw */

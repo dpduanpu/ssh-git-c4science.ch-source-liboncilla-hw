@@ -14,7 +14,7 @@ using namespace rci;
  * - motion capturing system for L4 pose in cartesian world coordinates
  * - pressure plate for contact forces
  */
-class SupervisorL4: public rci::oncilla::SupervisorL4 {
+class SupervisorL4 : public rci::oncilla::SupervisorL4 {
 public:
 	SupervisorL4(const std::string & name);
 	virtual ~SupervisorL4();

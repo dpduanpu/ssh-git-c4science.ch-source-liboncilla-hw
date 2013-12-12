@@ -16,7 +16,7 @@ class Config;
 class MainSection;
 class Queue;
 
-class Synchronizer: public rci::oncilla::Synchronizer {
+class Synchronizer : public rci::oncilla::Synchronizer {
 public:
 	typedef boost::shared_ptr< ::liboncilla::hw::Synchronizer> Ptr;
 
@@ -34,15 +34,15 @@ public:
 
 	class RegistrationAccessor {
 		static void RegisterTrunk(liboncilla::hw::Synchronizer & itself,
-				const Trunk::Ptr & node);
+		                          const Trunk::Ptr & node);
 		static void RegisterL0(liboncilla::hw::Synchronizer & itself,
-				rci::oncilla::Leg l, const L0::Ptr & node);
+		                       rci::oncilla::Leg l, const L0::Ptr & node);
 		static void RegisterL1(liboncilla::hw::Synchronizer & itself,
-				rci::oncilla::Leg l, const L1L2::Ptr & node);
+		                       rci::oncilla::Leg l, const L1L2::Ptr & node);
 		static void RegisterL2(liboncilla::hw::Synchronizer & itself,
-				rci::oncilla::Leg l, const L1L2::Ptr & node);
+		                       rci::oncilla::Leg l, const L1L2::Ptr & node);
 		static void RegisterL3(liboncilla::hw::Synchronizer & itself,
-				rci::oncilla::Leg l, const L3::Ptr & node);
+		                       rci::oncilla::Leg l, const L3::Ptr & node);
 		friend class ::HWOncillaBackend;
 	};
 protected:
@@ -76,34 +76,43 @@ private:
 
 	NativeHolder<RT_EVENT> d_event;
 	unsigned long d_idleQueueMask;
-	SBCPQueue d_sbcpQueue;
-	RBIOQueue d_rbioQueue;
-	ListOfQueue d_queues;
+	SBCPQueue     d_sbcpQueue;
+	RBIOQueue     d_rbioQueue;
+	ListOfQueue   d_queues;
 
 };
 
-inline void Synchronizer::RegistrationAccessor::RegisterTrunk(
-		Synchronizer & itself, const Trunk::Ptr & node) {
+inline void 
+Synchronizer::RegistrationAccessor::RegisterTrunk(Synchronizer & itself, 
+                                                  const Trunk::Ptr & node) {
 	itself.RegisterTrunk(node);
 }
 
-inline void Synchronizer::RegistrationAccessor::RegisterL0(
-		Synchronizer & itself, rci::oncilla::Leg l, const L0::Ptr & node) {
+inline void 
+Synchronizer::RegistrationAccessor::RegisterL0(Synchronizer & itself, 
+                                               rci::oncilla::Leg l, 
+                                               const L0::Ptr & node) {
 	itself.RegisterL0(l, node);
 }
 
-inline void Synchronizer::RegistrationAccessor::RegisterL1(
-		Synchronizer & itself, rci::oncilla::Leg l, const L1L2::Ptr & node) {
+inline void 
+Synchronizer::RegistrationAccessor::RegisterL1(Synchronizer & itself, 
+                                               rci::oncilla::Leg l, 
+                                               const L1L2::Ptr & node) {
 	itself.RegisterL1(l, node);
 }
 
-inline void Synchronizer::RegistrationAccessor::RegisterL2(
-		Synchronizer & itself, rci::oncilla::Leg l, const L1L2::Ptr & node) {
+inline void 
+Synchronizer::RegistrationAccessor::RegisterL2(Synchronizer & itself, 
+                                               rci::oncilla::Leg l, 
+                                               const L1L2::Ptr & node) {
 	itself.RegisterL2(l, node);
 }
 
-inline void Synchronizer::RegistrationAccessor::RegisterL3(
-		Synchronizer & itself, rci::oncilla::Leg l, const L3::Ptr & node) {
+inline void 
+Synchronizer::RegistrationAccessor::RegisterL3(Synchronizer & itself, 
+                                               rci::oncilla::Leg l, 
+                                               const L3::Ptr & node) {
 	itself.RegisterL3(l, node);
 }
 
