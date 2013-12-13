@@ -67,7 +67,7 @@ Synchronizer::~Synchronizer() {
 }
 
 void Synchronizer::calibrateIfNeeded() {
-
+	d_sbcpQueue.CalibrateMotorDrivers();
 }
 
 bool Synchronizer::start() {

@@ -202,6 +202,48 @@ void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node) {
 	d_encByL3[node] = &(fi->second->Q3());
 }
 
+bool AllMotorsCalibrated(const sbcp::amarsi::MotorDriver::Ptr & mdv) {
+	return mdv->Motor1().RuntimeCalibrated() && mdv->Motor2().RuntimeCalibrated();
+ }
+
+void SBCPQueue::CalibrateMotorDrivers() {
+	typedef std::set< sbcp::amarsi::MotorDriver::Ptr> SetOfMDV;
+	
+	SetOfMDV uncalibrated;
+	for(MotordriverByLeg::const_iterator mdv = d_motordrivers.begin();
+	    mdv != d_motordrivers.end();
+	    ++mdv) {
+		if (!mdv->second) {
+			continue;
+		}
+		if (AllMotorsCalibrated(mdv->second)) {
+			log(debug, LegPrefix(mdv->first), " motors are already runtime calibrated");
+		} else {
+			log(debug, "Calibrating ", LegPrefix(mdv->first), " motors");
+			mdv->second->CalibrateMotors();
+			uncalibrated.insert(mdv->second);
+		}
+	}
+
+
+	while(!uncalibrated.empty()) {
+		usleep(1e5);
+		SetOfMDV toTest = uncalibrated;
+		for(SetOfMDV::const_iterator mdv = toTest.begin();
+		    mdv != toTest.end();
+		    ++mdv) {
+			if(AllMotorsCalibrated(*mdv)) {
+				log(debug,"All motor of board ", (int)(*mdv)->ID(), " calibrated");
+				uncalibrated.erase(*mdv);
+			}
+		}
+
+	}
+
+	log(debug, "All motors calibrated");
+
+}
+
 sbcp::amarsi::MotorDriver::Ptr 
 SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def, 
                                        const BrushlessParameterGroup & params,
@@ -224,20 +266,6 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
 		return res;
 	}
 
-    bool m1Calibrated(GetCalibrationStatus(res->Motor1(),1));
-	bool m2Calibrated(GetCalibrationStatus(res->Motor2(),2));
-	if(! (m1Calibrated || m2Calibrated)){
-		res->CalibrateMotors();
-	} else {
-		log(debug, "Motor already calibrated");
-	}
-
-	while(!(m1Calibrated && m2Calibrated)){
-		usleep(1e5);
-		m1Calibrated = GetCalibrationStatus(res->Motor1(), 1);
-		m2Calibrated = GetCalibrationStatus(res->Motor2(), 2);
-	}
-	log(debug, "Motor calibrated");
 
 	SetMotorParameters(params, def.M1Params(), expectedTsInMs, res->Motor1());
 	SetMotorParameters(params, def.M2Params(), expectedTsInMs, res->Motor2());
@@ -274,10 +302,6 @@ void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
 	motor.SmoothPositionUpdate().Set(expectedTsInMs);
 }
 
-bool SBCPQueue::GetCalibrationStatus(sbcp::amarsi::MotorDriver::Motor & m, int number) {
-	uint16_t val(m.MotorControlMode().Get());
-	return val & (1 << 9);
-}
 
 } /* namespace hw */
 } /* namespace liboncilla */
