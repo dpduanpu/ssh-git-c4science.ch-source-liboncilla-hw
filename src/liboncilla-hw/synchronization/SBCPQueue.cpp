@@ -62,6 +62,7 @@ void SBCPQueue::DownstreamData() {
 }
 
 void SBCPQueue::UpstreamData() {
+	//keep this all small as possible KISS -> Fast
 	for (MotorAndEncoderByL1L2::const_iterator motAndEnc = d_motAndEncByL1L2.begin(); 
 	     motAndEnc != d_motAndEncByL1L2.end();
 	     ++motAndEnc) {
@@ -74,65 +75,87 @@ void SBCPQueue::UpstreamData() {
 	for (MotorDriverByL0::const_iterator mdv = d_mdvByL0.begin();
 	     mdv != d_mdvByL0.end();
 	     ++mdv) {
-		if (mdv->second == NULL) {
-			// TODO: Throw? std::cout << "SBCPQueue::InitializeIO: Ignoring motor driver "<<md->second<<std::endl;
-		} else {
 			mdv->first->queueToNodeForces(mdv->second->Force(0).Get(),
 			                              mdv->second->Force(1).Get(), 
 			                              mdv->second->Force(2).Get());
-		}
 	}
 
 	for (MagneticEncoderByL3::const_iterator enc = d_encByL3.begin();
 	     enc != d_encByL3.end(); 
 	     ++enc) {
-		if (enc->second == NULL) {
-			// TODO: Throw? std::cout << "SBCPQueue::InitializeIO: Ignoring motor driver "<<md->second<<std::endl;
-		} else {
 			enc->first->queueToNodeJointPosition(enc->second->PositionAndStatus().Get() & 0x3fff,
 			                                     (enc->second->PositionAndStatus().Get() & 0xc000) >> 14);
-		}
 	}
 }
 
 void SBCPQueue::PerformIO() {
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
-	// Start transfer
+	// Maybe we could catch here communictaion errors, i.e. sbcp::MultipleTransferError
 	w.StartTransfers();
-
-	// Wait for transfer to complete
 	w.WaitForTransfersCompletion();
 }
 
+
+
 void SBCPQueue::InitializeIO() {
-	// Enable scheduled woirkflow
+	//first make a sanity check to avoid problem in
+	//Upstream/DownstreamData. It will throw exception here instead of
+	//issuing hard to debug segfault form the Callback
+	for(MotorAndEncoderByL1L2::const_iterator motAndEnc = d_motAndEncByL1L2.begin();
+	    motAndEnc != d_motAndEncByL1L2.end();
+	    ++motAndEnc) {
+		if( motAndEnc->second.motor && motAndEnc->second.encoder ) {
+			continue;
+		}
+		throw std::logic_error("Internal error: SBCPQueue::d_motAndEncByL1L2 is not sane!");
+	}
+
+	for(MotorDriverByL0::const_iterator mdv = d_mdvByL0.begin();
+	    mdv != d_mdvByL0.end();
+	    ++mdv) {
+		if( !mdv->second) {
+			throw std::logic_error("Internal error: SBCPQueue::d_mdvByL0 is not sane!");
+		}
+	}
+
+	for(MagneticEncoderByL3::const_iterator enc = d_encByL3.begin();
+	    enc != d_encByL3.end(); 
+	    ++enc) {
+		if (!enc->second) {
+			throw std::logic_error("Internal error: SBCPQueue::d_encByL3 is not sane!");
+		}
+	}
+	//Upstream/DownstreamData should not issue segfault for any reason now !	
+	
+
+	// Enable scheduled workflow
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
 	// Append devices to transfer
 	for (MotordriverByLeg::iterator md = d_motordrivers.begin();
 	     md != d_motordrivers.end(); 
 	     ++md) {
-
-		if (md->second == NULL) {
+		if (!md->second) {
 			log(debug, "SBCPQueue::InitializeIO: Ignoring motor driver ",
 			    LegPrefix(md->first) );
-		} else {
-			log( debug,  "Appending scheduled device " , LegPrefix(md->first) );
-			w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(md->second));
+			continue;
 		}
+
+		log( debug,  "Appending scheduled device " , LegPrefix(md->first) );
+		w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(md->second));
 	}
 }
 
 void SBCPQueue::DeinitializeIO() {
-	// Disable scheduled woirkflow
-	this->d_bus->Lazy();
+	// Disable scheduled woirkflow. It will WaitForTransferCompletion.
+	d_bus->Lazy();
 }
 
 void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node) {
 	// check if this map contains this leg
 	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
-	if (fi == d_motordrivers.end()) {
+	if (fi == d_motordrivers.end() || !fi->second ) {
 		throw(std::runtime_error("Failed to open motordriver, upon initialization of this Queue, for motordriver "
 		                         + LegPrefix(l)));
 	}
@@ -141,9 +164,7 @@ void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node) {
 }
 
 void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node) {
-	bool isLeftLeg =
-			((l == rci::oncilla::LEFT_FORE) || (l == rci::oncilla::LEFT_HIND)) ?
-					true : false;
+	bool isLeftLeg = (l == rci::oncilla::LEFT_FORE) || (l == rci::oncilla::LEFT_HIND);
 	bool isHip = true;
 
 	//check if this map contains this leg
@@ -166,8 +187,7 @@ void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node) {
 }
 
 void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node) {
-	bool isRightLeg = ((l == rci::oncilla::RIGHT_FORE) || (l == rci::oncilla::RIGHT_HIND)) ? true 
-	                                                                                       : false;
+	bool isRightLeg = (l == rci::oncilla::RIGHT_FORE) || (l == rci::oncilla::RIGHT_HIND);
 	bool isHip = false;
 
 	//check if this map contains this leg
