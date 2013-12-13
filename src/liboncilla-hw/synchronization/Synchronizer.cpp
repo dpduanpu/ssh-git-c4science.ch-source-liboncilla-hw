@@ -12,6 +12,7 @@ namespace hw {
 
 Synchronizer::Synchronizer(const Config & config)
 	: rci::oncilla::Synchronizer("Oncilla HW Synchronizer")
+	, d_lastLoopSteps(0)
 	, d_timestep(config.Main().Timestep() * 1.0e-3)
 	, d_priority(config.Main().MainPriority())
 	, d_sbcpQueue(config)
@@ -71,7 +72,7 @@ void Synchronizer::calibrateIfNeeded() {
 }
 
 bool Synchronizer::start() {
-	d_firstStepped = false;
+	d_lastLoopSteps = 0;
 
 	RT_EVENT * e = new RT_EVENT();
 	xeno_call(rt_event_create, e, Queue::EventName, 0, EV_PRIO);
@@ -98,15 +99,12 @@ bool Synchronizer::stop() {
 		(*q)->StopTask();
 	}
 	d_event = NativeHolder<RT_EVENT>();
-
+	d_lastLoopSteps = 0;
 	return rci::Synchronizer::stop();
 }
 
 double Synchronizer::lastProcessTimeStep() const {
-	if (!d_firstStepped) {
-		return 0.0;
-	}
-	return d_timestep * (d_overruns + 1);
+	return d_timestep * d_lastLoopSteps;
 }
 
 void Synchronizer::ProcessAsyncPrimpl() {
@@ -118,19 +116,20 @@ void Synchronizer::ProcessAsyncPrimpl() {
 		}
 	}
 	WakeIdleQueues();
-	d_firstStepped = true;
 }
 
 void Synchronizer::WaitForProcessAsyncPrimpl() {
 	int res;
 
 	unsigned int maxTrials(20);
-
+	unsigned long overruns(0);
+	d_lastLoopSteps = 0;
 	while (true) {
-		res = rt_task_wait_period(&d_overruns);
+		res = rt_task_wait_period(&overruns);
 		if (res != 0 && res != -ETIMEDOUT) {
 			xeno_throw_error_from(rt_task_wait_period, res);
 		}
+		d_lastLoopSteps += 1 + overruns;
 
 		FetchIdleQueues();
 		//we ensure that all sbcp communication are done !

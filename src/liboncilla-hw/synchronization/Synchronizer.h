@@ -67,9 +67,7 @@ private:
 	void FetchIdleQueues();
 	bool IsFinished(const Queue & q);
 
-	unsigned long d_overruns;
-
-	bool d_firstStepped;
+	unsigned long d_lastLoopSteps;
 
 	double d_timestep;
 	unsigned int d_priority;
