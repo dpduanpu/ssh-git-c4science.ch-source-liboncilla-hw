@@ -167,31 +167,29 @@ void Synchronizer::RegisterL0(rci::oncilla::Leg l, const L0::Ptr& node) {
 }
 
 void Synchronizer::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr& node) {
-	if (node == NULL) {
-		// TODO: Logging/Warning
-		std::cout << "Ignoring L1 node of leg " << l << ". Is it connected?"
-		          << std::endl;
-		return; // Node is missing - board might be disconnected
+	if (!node) {
+		std::ostringstream os;
+		os << "Ignoring L1 node of leg " << l << ". Is it connected?";
+		throw std::runtime_error(os.str());
 	}
 	d_sbcpQueue.RegisterL1(l, node);
 }
 
 void Synchronizer::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr& node) {
-	if (node == NULL) {
-		// TODO: Logging/Warning
-		std::cout << "Ignoring L2 node of leg " << l << ". Is it connected?"
-		          << std::endl;
-		return; // Node is missing - board might be disconnected
+	if (!node) {
+		
+		std::ostringstream os;
+		os << "Ignoring L2 node of leg " << l << ". Is it connected?";
+		throw std::runtime_error(os.str());
 	}
 	d_sbcpQueue.RegisterL2(l, node);
 }
 
 void Synchronizer::RegisterL3(rci::oncilla::Leg l, const L3::Ptr& node) {
-	if (node == NULL) {
-		// TODO: Logging/Warning
-		std::cout << "Ignoring L3 node of leg " << l << ". Is it connected?"
-		          << std::endl;
-		return; // Node is missing - board might be disconnected
+	if (!node) {
+		std::ostringstream os;
+		os << "Ignoring L3 node of leg " << l << ". Is it connected?";
+		throw std::runtime_error(os.str());
 	}
 	d_sbcpQueue.RegisterL3(l, node);
 }

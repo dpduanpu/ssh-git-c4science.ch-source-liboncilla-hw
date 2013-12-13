@@ -148,16 +148,9 @@ void SBCPQueue::RegisterL1(rci::oncilla::Leg l, const L1L2::Ptr & node) {
 
 	//check if this map contains this leg
 	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
-	if (fi == d_motordrivers.end()) {
+	if (fi == d_motordrivers.end() || !fi->second) {
 		throw(std::runtime_error("Failed to open motordriver earlier, upon initialization of this Queue, for motordriver "
 		                         + LegPrefix(l)));
-	}
-
-	if (fi->second == NULL) {
-		// TODO: Throw?
-		log(debug, "SBCPQueue::RegisterL1: Ignoring L1 of leg ",
-		    LegPrefix(l),". Is it connected?");
-		return;
 	}
 
 	node->initialize(isLeftLeg, isHip,
@@ -179,16 +172,11 @@ void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node) {
 
 	//check if this map contains this leg
 	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
-	if (fi == d_motordrivers.end()) {
+	if (fi == d_motordrivers.end() || !fi->second) {
 		throw(std::runtime_error("Failed to open motordriver earlier, upon initialization of this Queue, for motordriver "
 		                         + LegPrefix(l)));
 	}
 
-	if (fi->second == NULL) {
-		// TODO: Throw?
-		log(debug, "SBCPQueue::RegisterL2: Ignoring L2 of leg ", LegPrefix(l), ". Is it connected?");
-		return;
-	}
 
 	node->initialize(isRightLeg, 
 	                 isHip,
@@ -206,16 +194,9 @@ void SBCPQueue::RegisterL2(rci::oncilla::Leg l, const L1L2::Ptr & node) {
 void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node) {
 	//check if this map contains this leg
 	MotordriverByLeg::const_iterator fi = d_motordrivers.find(l);
-	if (fi == d_motordrivers.end()) {
+	if (fi == d_motordrivers.end() || !fi->second) {
 		throw(std::runtime_error("Failed to open motordriver, upon initialization of this Queue, for motordriver "
 		                         + LegPrefix(l)));
-	}
-
-	if (fi->second == NULL) {
-		// TODO: Throw?
-		log(debug, "SBCPQueue::RegisterL3: Ignoring L3 of leg ",
-		    LegPrefix(l), ". Is it connected?");
-		return;
 	}
 
 	d_encByL3[node] = &(fi->second->Q3());
@@ -226,23 +207,20 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
                                        const BrushlessParameterGroup & params,
                                        int16_t expectedTsInMs) {
 	log(debug, "SBCPQueue::OpenAndConfigureMotorDriver()");
-
-    this->d_bus->Lazy();
+	
 
 	if (!d_bus) {
-		throw std::runtime_error("SBCPQueue::OpenAndConfigureMotorDriver() Can't"
-		                         " load bus due to missing configuration.");
-	} else {
-		log(debug, "SBCPQueue::OpenAndConfigureMotorDriver() Bus Workflow: ",
-		    d_bus->CurrentWorkflow());
+		throw std::logic_error("SBCPQueue::d_bus private member should be initialized in"
+		                       "constructor. Please report this internal bug");
 	}
+
+    this->d_bus->Lazy();
 
 	sbcp::amarsi::MotorDriver::Ptr res = d_bus->OpenDevice< sbcp::amarsi::MotorDriver > (def.BoardID());
 
 	if (!res) {
 		// board is just not here, buit we will throw later if it is required.
-		log(debug, "SBCPQueue::OpenAndConfigureMotorDriver() Ignoring board, ",
-		    "doesn't seem to be connected.");
+		log(debug, "Could not find an AMARSi motordriver board with ID ", (int)def.BoardID(), "on the bus");
 		return res;
 	}
 
@@ -259,7 +237,7 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
 		m1Calibrated = GetCalibrationStatus(res->Motor1(), 1);
 		m2Calibrated = GetCalibrationStatus(res->Motor2(), 2);
 	}
-	lohg(debug, "Motor calibrated");
+	log(debug, "Motor calibrated");
 
 	SetMotorParameters(params, def.M1Params(), expectedTsInMs, res->Motor1());
 	SetMotorParameters(params, def.M2Params(), expectedTsInMs, res->Motor2());
