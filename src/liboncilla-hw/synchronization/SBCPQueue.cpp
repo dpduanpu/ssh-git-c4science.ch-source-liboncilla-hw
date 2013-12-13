@@ -242,15 +242,6 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
 	SetMotorParameters(params, def.M1Params(), expectedTsInMs, res->Motor1());
 	SetMotorParameters(params, def.M2Params(), expectedTsInMs, res->Motor2());
 
-
-	res->Motor1().MaxTorque().Set(300); // 300
-	res->Motor1().MaxSpeed().Set(20000); // 32000
-	res->Motor1().MaxAcceleration().Set(400); // 800
-
-	res->Motor2().MaxTorque().Set(300);
-	res->Motor2().MaxSpeed().Set(20000);
-	res->Motor2().MaxAcceleration().Set(400);
-
 	return res;
 }
 
