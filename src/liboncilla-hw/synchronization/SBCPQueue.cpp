@@ -11,6 +11,10 @@
 
 #include <liboncilla-hw/config/Config.h>
 
+#include <biorob-cpp/log/Logger.h>
+
+
+
 namespace liboncilla {
 namespace hw {
 
@@ -245,7 +249,7 @@ void SBCPQueue::RegisterL3(rci::oncilla::Leg l, const L3::Ptr & node) {
 sbcp::amarsi::MotorDriver::Ptr SBCPQueue::OpenAndConfigureMotorDriver(
 		const MotorDriverSection & def, const BrushlessParameterGroup & params,
 		int16_t expectedTsInMs) {
-    std::cout << "SBCPQueue::OpenAndConfigureMotorDriver()" << std::endl;
+  log(debug,"Open and Configure motor ",def.Section().Name());
 
     this->d_bus->Lazy();
 
@@ -287,6 +291,8 @@ sbcp::amarsi::MotorDriver::Ptr SBCPQueue::OpenAndConfigureMotorDriver(
 	SetMotorParameters(params, def.M2Params(), expectedTsInMs, res->Motor2());
 
 
+	
+	/*
 	res->Motor1().MaxTorque().Set(300); // 300
 	res->Motor1().MaxSpeed().Set(20000); // 32000
 	res->Motor1().MaxAcceleration().Set(400); // 800
@@ -294,7 +300,7 @@ sbcp::amarsi::MotorDriver::Ptr SBCPQueue::OpenAndConfigureMotorDriver(
 	res->Motor2().MaxTorque().Set(300);
 	res->Motor2().MaxSpeed().Set(20000);
 	res->Motor2().MaxAcceleration().Set(400);
-
+	*/
 	return res;
 }
 

@@ -53,7 +53,8 @@ void Queue::TaskEntryPoint(void * itself) {
 }
 
 void Queue::StopTask() {
-	log(debug, "Stopping Queue ", this);
+	//log(debug, "Stopping Queue ", this);
+	//std::cerr << "Stopping Queue " << this << std::endl;
 	d_task = NativeHolder<RT_TASK>();
 	this->DeinitializeIO();
 }
