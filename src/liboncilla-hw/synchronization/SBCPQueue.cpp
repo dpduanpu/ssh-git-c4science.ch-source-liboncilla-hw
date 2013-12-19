@@ -127,29 +127,52 @@ void SBCPQueue::InitializeIO() {
 		}
 	}
 	//Upstream/DownstreamData should not issue segfault for any reason now !	
+
+
+	// Switch on the motors
+	for (MotordriverByLeg::iterator mdv = d_motordrivers.begin();
+	     mdv != d_motordrivers.end(); 
+	     ++mdv) {
+		log( debug, "Setting ", LegPrefix(mdv->first) , " motors on."); 
+		mdv->second->Motor1().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
+		mdv->second->Motor2().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
+	}
 	
 
 	// Enable scheduled workflow
 	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
 
 	// Append devices to transfer
-	for (MotordriverByLeg::iterator md = d_motordrivers.begin();
-	     md != d_motordrivers.end(); 
-	     ++md) {
-		if (!md->second) {
+	for (MotordriverByLeg::iterator mdv = d_motordrivers.begin();
+	     mdv != d_motordrivers.end(); 
+	     ++mdv) {
+		if (!mdv->second) {
 			log(debug, "SBCPQueue::InitializeIO: Ignoring motor driver ",
-			    LegPrefix(md->first) );
+			    LegPrefix(mdv->first) );
 			continue;
 		}
 
-		log( debug,  "Appending scheduled device " , LegPrefix(md->first) );
-		w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(md->second));
+		log( debug,  "Appending scheduled device " , LegPrefix(mdv->first) );
+		w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(mdv->second));
 	}
+
+	log( debug, "SBCP Scheduled Workflow enabled and configured.");
 }
 
 void SBCPQueue::DeinitializeIO() {
 	// Disable scheduled woirkflow. It will WaitForTransferCompletion.
 	d_bus->Lazy();
+	log( debug, "SBCP Scheduled Workflow disabled.");
+	// disable motor smooth position control. Anyway the board
+	// firmware will do it in 10 timestep.
+	for (MotordriverByLeg::iterator mdv = d_motordrivers.begin();
+	     mdv != d_motordrivers.end(); 
+	     ++mdv) {
+		log( debug, "Setting ", LegPrefix(mdv->first) , " motors off."); 
+		mdv->second->Motor1().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::COAST);
+		mdv->second->Motor2().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::COAST);
+	}
+	
 }
 
 void SBCPQueue::RegisterL0(rci::oncilla::Leg l, const L0::Ptr & node) {
@@ -304,8 +327,12 @@ void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
 	if (!params) {
 		throw std::runtime_error("Unknown motor parameter group '" + paramName + "'");
 	}
-
-	motor.MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
+	
+	// Do no set the Motor::MotorControlMode(). Indeed it could fails
+	// if the motor are not calibrated. Furthermore, when entering
+	// smooth position, the board is waiting for realtime periodic
+	// command. So we should set this mode as close as possible of the
+	// ScheduledWorkflow switch (i.e. InitializeIO() ).
 
 	motor.PGain().Set(params->PGain());
 	motor.IGain().Set(params->IGain());
