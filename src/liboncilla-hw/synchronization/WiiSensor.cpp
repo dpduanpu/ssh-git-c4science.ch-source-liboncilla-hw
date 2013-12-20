@@ -1,13 +1,12 @@
 #include "WiiSensor.h"
 
-#include <limits>
-#include <iostream>
 #include <inttypes.h>
 
 WiiSensor::WiiSensor()
 	: I2CDevice(WiiSensor::default_address){
 	d_data.assign(12,0); //initialize data to zero
 }
+WiiSensor::~WiiSensor(){}
 
 WiiSensor::WiiSensor(I2CDevice::Address address)
 	: I2CDevice(address){
@@ -17,7 +16,7 @@ WiiSensor::WiiSensor(I2CDevice::Address address)
 void WiiSensor::ReadValue(){
 	std::vector<uint8_t> data(18);
 	//data.reserve(18);
-	data = Read(18); //read result of last sent command
+	this->Read(18, data); //read result of last sent command
 
 	std::vector<uint8_t> command(21);
 	//data.reserve(21);
@@ -30,18 +29,18 @@ void WiiSensor::ReadValue(){
 	Write(command);
 	for(int i=0; i<4; i++){
 		//unpack the data, which is spread out over 3 bytes in the response
-		uint16_t s = data[4+3*i]
-		d_data[0+4*i] = ((s & 0x30)<<4) | data[2+3*i]
-		d_data[1+4*i] = ((s & 0xC0)<<4) | data[3+3*i]
-		d_data[2+4*i] = (s & 0x0F)
+		uint16_t s = data[4+3*i];
+		d_data[0+4*i] = ((s & 0x30)<<4) | data[2+3*i];
+		d_data[1+4*i] = ((s & 0xC0)<<4) | data[3+3*i];
+		d_data[2+4*i] = (s & 0x0F);
 	}
 }
 
 I2CDevice::Address WiiSensor::getAddress(int toggle){
-	return (I2CDevice::Address) (WiiSensor::default_address + (toggle << 1))
+	return (I2CDevice::Address) (WiiSensor::default_address + (toggle << 1));
 }
 
-const WiiSensor::DataVector & Sensor::Data() const {
+const WiiSensor::UIntDataVector & WiiSensor::Data() const {
 	return d_data;
 }
 
