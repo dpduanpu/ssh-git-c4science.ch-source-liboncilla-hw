@@ -90,6 +90,10 @@ public:
 	MotorSection(options::Section::Ptr s);
 	virtual ~MotorSection();
 
+	BCPP_ADD_OPTION(CommunicationErrorThreshold, "communication-error-threshold", int , 1,
+	                "Number of SBCP communication error, that will threshold a failure of the robot, (i.e. unhandled exception)")
+
+
 	BCPP_ADD_SUBSECTION(BrushlessParameterGroup,
 	                    Params,
 	                    "params",

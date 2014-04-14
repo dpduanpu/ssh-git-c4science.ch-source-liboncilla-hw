@@ -73,6 +73,7 @@ private:
 	MotordriverByLeg d_motordrivers;
 
 	std::tr1::shared_ptr<sbcp::Bus> d_bus;
+	const int                       d_errorThreshold;
 };
 
 } /* namespace hw */

@@ -55,6 +55,7 @@ MotorDriverGroup::~MotorDriverGroup() {
 
 MotorSection::MotorSection(options::Section::Ptr s) 
 	: options::ConfigSection(s)
+	, d_hCommunicationErrorThreshold(Section())
 	, d_shParams(Section())
 	, d_shDevices(Section()) {
 }
