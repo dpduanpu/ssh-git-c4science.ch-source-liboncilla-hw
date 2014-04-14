@@ -18,7 +18,8 @@ namespace hw {
 
 SBCPQueue::SBCPQueue(const Config & config) 
 	: Queue(config.Main().SBCPPriority(), true)
-	, d_bus() {
+	, d_bus() 
+	, d_errorThreshold(config.Motors().CommunicationErrorThreshold()) {
 	sbcp::Config sbcpConfig;
 	sbcpConfig.LoadAllFiles();
 
@@ -89,11 +90,19 @@ void SBCPQueue::UpstreamData() {
 }
 
 void SBCPQueue::PerformIO() {
-	sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
-
-	// Maybe we could catch here communictaion errors, i.e. sbcp::MultipleTransferError
-	w.StartTransfers();
-	w.WaitForTransfersCompletion();
+  sbcp::ScheduledWorkflow & w = this->d_bus->Scheduled();
+  static int nbErrors(0);
+  // Maybe we could catch here communictaion errors, i.e. sbcp::MultipleTransferError
+  try {
+    w.StartTransfers();
+    w.WaitForTransfersCompletion();
+  } catch( const sbcp::MultipleTransferError & e) {
+    nbErrors += e.Errors().size();
+    if( d_errorThreshold >= 0 && d_errorThreshold <= nbErrors ) {
+      throw;
+    }
+    std::cerr << "SBCP Error ("<< nbErrors << "/" << d_errorThreshold << ") : " <<e.what() << std::endl;
+  }
 }
 
 
