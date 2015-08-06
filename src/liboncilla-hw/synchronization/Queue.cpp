@@ -19,9 +19,8 @@ unsigned int Queue::s_nbQueues(0);
 const unsigned int Queue::MaxNbQueues(8 * sizeof(unsigned long));
 const char * Queue::EventName = "liboncilla-hw synchronization event";
 
-Queue::Queue(unsigned int priority, bool preferNonRt) 
+Queue::Queue(unsigned int priority) 
 	: d_id(s_nbQueues++)
-	, d_preferNonRt(preferNonRt)
 	, d_priority(priority) {
 	if (s_nbQueues > MaxNbQueues) {
 		std::ostringstream os;
@@ -78,10 +77,6 @@ void Queue::Loop() {
 
 		if (res) {
 			xeno_throw_error_from(rt_event_wait, -res);
-		}
-
-		if (d_preferNonRt) {
-			xeno_call(rt_task_set_mode, T_PRIMARY, 0, NULL);
 		}
 
 		PerformIO();

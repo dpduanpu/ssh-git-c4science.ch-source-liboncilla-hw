@@ -15,9 +15,9 @@
 
 namespace liboncilla {
 namespace hw {
-
+ 
 SBCPQueue::SBCPQueue(const Config & config) 
-	: Queue(config.Main().SBCPPriority(), true)
+	: Queue(config.Main().SBCPPriority())
 	, d_bus() 
 	, d_errorThreshold(config.Motors().CommunicationErrorThreshold()) {
 	sbcp::Config sbcpConfig;

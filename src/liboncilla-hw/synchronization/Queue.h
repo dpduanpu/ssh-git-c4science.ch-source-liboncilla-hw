@@ -22,7 +22,7 @@ public:
 	/**
 	 * /param preferNonRt: use callbacks which are not supposed to run on the realtime Kernel (default: true)
 	 */
-	Queue(unsigned int priority, bool preferNonRt);
+	Queue(unsigned int priority);
 	virtual ~Queue();
 
 	/**
@@ -67,7 +67,6 @@ private:
 
 	NativeHolder<RT_TASK> d_task;
 	const unsigned int    d_id;
-	const bool            d_preferNonRt;
 	const unsigned int    d_priority;
 };
 
