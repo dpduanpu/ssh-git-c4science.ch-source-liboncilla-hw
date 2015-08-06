@@ -31,8 +31,11 @@ if(NOT XENOMAI_NATIVE_FOUND)
   message(FATAL_ERROR "Could not found Xenomai native skin")
 endif(NOT XENOMAI_NATIVE_FOUND)
 
-
-pkg_check_modules(DEPS REQUIRED libsbcp-0 biorob-rbio-0.3 liboncilla-0 eigen3)
+pkg_check_modules(DEPS REQUIRED liboncilla-0 
+                                libsbcp-0 
+                                biorob-rbio-0.3 
+                                eigen3
+                                libglog)
 
 add_compile_options(${DEPS_CFLAGS_OTHER})
 

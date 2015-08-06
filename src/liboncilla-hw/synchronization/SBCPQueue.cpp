@@ -7,7 +7,7 @@
 
 #include "SBCPQueue.h"
 
-#include <biorob-cpp/log/Logger.h>
+#include <glog/logging.h>
 
 #include <libsbcp/utils/Config.h>
 
@@ -33,7 +33,7 @@ SBCPQueue::SBCPQueue(const Config & config)
 	if (!d_bus) {
 		throw std::runtime_error("SBCPQueue::SBCPQueue() Can't load bus due to missing configuration.");
 	} else {
-		log(debug, "Bus Workflow: ", d_bus->CurrentWorkflow());
+		DLOG(INFO) << "Bus Workflow: " << d_bus->CurrentWorkflow();
 	}
 
 	const MotorDriverGroup & devices = config.Motors().Devices();
@@ -142,7 +142,7 @@ void SBCPQueue::InitializeIO() {
 	for (MotordriverByLeg::iterator mdv = d_motordrivers.begin();
 	     mdv != d_motordrivers.end(); 
 	     ++mdv) {
-		log( debug, "Setting ", LegPrefix(mdv->first) , " motors on."); 
+		DLOG(INFO) << "Setting " << LegPrefix(mdv->first) << " motors on.";
 		mdv->second->Motor1().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
 		mdv->second->Motor2().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::SMOOTH_POSITION);
 	}
@@ -156,28 +156,28 @@ void SBCPQueue::InitializeIO() {
 	     mdv != d_motordrivers.end(); 
 	     ++mdv) {
 		if (!mdv->second) {
-			log(debug, "SBCPQueue::InitializeIO: Ignoring motor driver ",
-			    LegPrefix(mdv->first) );
+			DLOG(INFO) << "SBCPQueue::InitializeIO: Ignoring motor driver "
+			           << LegPrefix(mdv->first);
 			continue;
 		}
 
-		log( debug,  "Appending scheduled device " , LegPrefix(mdv->first) );
+		DLOG(INFO) <<  "Appending scheduled device " << LegPrefix(mdv->first);
 		w.AppendScheduledDevice(std::static_pointer_cast<sbcp::Device>(mdv->second));
 	}
 
-	log( debug, "SBCP Scheduled Workflow enabled and configured.");
+	DLOG(INFO) << "SBCP Scheduled Workflow enabled and configured.";
 }
 
 void SBCPQueue::DeinitializeIO() {
 	// Disable scheduled woirkflow. It will WaitForTransferCompletion.
 	d_bus->Lazy();
-	log( debug, "SBCP Scheduled Workflow disabled.");
+	DLOG(INFO) << "SBCP Scheduled Workflow disabled.";
 	// disable motor smooth position control. Anyway the board
 	// firmware will do it in 10 timestep.
 	for (MotordriverByLeg::iterator mdv = d_motordrivers.begin();
 	     mdv != d_motordrivers.end(); 
 	     ++mdv) {
-		log( debug, "Setting ", LegPrefix(mdv->first) , " motors off."); 
+		DLOG(INFO) << "Setting " << LegPrefix(mdv->first) << " motors off."; 
 		mdv->second->Motor1().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::COAST);
 		mdv->second->Motor2().MotorControlMode().Set(sbcp::amarsi::MotorDriver::Motor::COAST);
 	}
@@ -269,9 +269,9 @@ void SBCPQueue::CalibrateMotorDrivers() {
 			continue;
 		}
 		if (AllMotorsCalibrated(mdv->second)) {
-			log(debug, LegPrefix(mdv->first), " motors are already runtime calibrated");
+			DLOG(INFO) << LegPrefix(mdv->first) << " motors are already runtime calibrated";
 		} else {
-			log(debug, "Calibrating ", LegPrefix(mdv->first), " motors");
+			DLOG(INFO) << "Calibrating " << LegPrefix(mdv->first) << " motors";
 			mdv->second->CalibrateMotors();
 			uncalibrated.insert(mdv->second);
 		}
@@ -285,14 +285,14 @@ void SBCPQueue::CalibrateMotorDrivers() {
 		    mdv != toTest.end();
 		    ++mdv) {
 			if(AllMotorsCalibrated(*mdv)) {
-				log(debug,"All motor of board ", (int)(*mdv)->ID(), " calibrated");
+				DLOG(INFO) << "All motor of board " << (int)(*mdv)->ID() << " calibrated";
 				uncalibrated.erase(*mdv);
 			}
 		}
 
 	}
 
-	log(debug, "All motors calibrated");
+	DLOG(INFO) << "All motors calibrated";
 
 }
 
@@ -300,7 +300,7 @@ sbcp::amarsi::MotorDriver::Ptr
 SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def, 
                                        const BrushlessParameterGroup & params,
                                        int16_t expectedTsInMs) {
-	log(debug, "SBCPQueue::OpenAndConfigureMotorDriver()");
+	DLOG(INFO) << "SBCPQueue::OpenAndConfigureMotorDriver()";
 	
 
 	if (!d_bus) {
@@ -314,7 +314,7 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
 
 	if (!res) {
 		// board is just not here, buit we will throw later if it is required.
-		log(debug, "Could not find an AMARSi motordriver board with ID ", (int)def.BoardID(), "on the bus");
+		DLOG(INFO) << "Could not find an AMARSi motordriver board with ID " << (int)def.BoardID() << "on the bus";
 		return res;
 	}
 
@@ -328,7 +328,7 @@ SBCPQueue::OpenAndConfigureMotorDriver(const MotorDriverSection & def,
 void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
                                    const std::string & paramName, int16_t expectedTsInMs,
                                    sbcp::amarsi::MotorDriver::Motor & motor) {
-	log(debug, "SBCPQueue::SetMotorParameters()" );
+	DLOG(INFO) << "SBCPQueue::SetMotorParameters()";
 	//due to a bad design of biorob-cpp dynamic section we should do this
 	std::shared_ptr<BrushlessParameterSection> params =
 		const_cast<BrushlessParameterGroup &>(paramGroup).SubSection(paramName);

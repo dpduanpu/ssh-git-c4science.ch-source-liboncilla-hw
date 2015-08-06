@@ -7,7 +7,7 @@
 
 #include "Queue.h"
 
-#include <biorob-cpp/log/Logger.h>
+#include <glog/logging.h>
 
 #include <sstream>
 #include <stdexcept>
@@ -36,7 +36,7 @@ Queue::~Queue() {
 }
 
 void Queue::StartTask() {
-	log(debug, "Creating task for Queue ", this);
+	DLOG(INFO) << "Creating task for Queue " << this;
 
 	RT_TASK * t = new RT_TASK();
 	xeno_call(rt_task_create, t, NULL, 0, d_priority, 0);
@@ -44,7 +44,7 @@ void Queue::StartTask() {
 
 	InitializeIO();
    
-	log(debug, "Starting task for Queue ", this);
+	DLOG(INFO) <<  "Starting task for Queue " <<this;
 
 	xeno_call(rt_task_start, 
 	          d_task.get(), 
@@ -57,7 +57,7 @@ void Queue::TaskEntryPoint(void * itself) {
 }
 
 void Queue::StopTask() {
-	log(debug, "Stopping Queue ", this);
+	DLOG(INFO) << "Stopping Queue " << this;
 	d_task = NativeHolder<RT_TASK>();
 	DeinitializeIO();
 }
