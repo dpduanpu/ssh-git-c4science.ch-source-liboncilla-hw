@@ -12,6 +12,7 @@ find_package(PkgConfig REQUIRED)
 ################################################################################
 # Boost, C++11 and CLANG check
 ################################################################################
+enable_cpp11()
 
 find_package(Boost REQUIRED)
 
@@ -31,7 +32,7 @@ if(NOT XENOMAI_NATIVE_FOUND)
 endif(NOT XENOMAI_NATIVE_FOUND)
 
 
-pkg_check_modules(DEPS REQUIRED libsbcp-0 biorob-rbio-0.3 liboncilla-0)
+pkg_check_modules(DEPS REQUIRED libsbcp-0 biorob-rbio-0.3 liboncilla-0 eigen3)
 
 include_directories(${DEPS_INCLUDE_DIRS}
                     ${PROJECT_SOURCE_DIR}/src
