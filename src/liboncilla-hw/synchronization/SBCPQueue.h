@@ -40,7 +40,7 @@ public:
 	void CalibrateMotorDrivers();
 
 private:
-	//std::tr1::shared_ptr<sbcp::amarsi::MotorDriver> d_motordrivers[4];
+	//std::shared_ptr<sbcp::amarsi::MotorDriver> d_motordrivers[4];
 
 	typedef std::map<liboncilla::hw::L0::Ptr, sbcp::amarsi::MotorDriver::Ptr> MotorDriverByL0;
 
@@ -72,7 +72,7 @@ private:
 
 	MotordriverByLeg d_motordrivers;
 
-	std::tr1::shared_ptr<sbcp::Bus> d_bus;
+	std::shared_ptr<sbcp::Bus> d_bus;
 	const int                       d_errorThreshold;
 };
 

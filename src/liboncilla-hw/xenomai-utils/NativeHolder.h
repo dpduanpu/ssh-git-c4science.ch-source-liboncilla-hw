@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <tr1/memory>
+#include <memory>
 
 #include <native/task.h>
 #include <native/mutex.h>
@@ -49,25 +49,25 @@ private:
 };
 
 template<typename T>
-class NativeHolder : public std::tr1::shared_ptr<T> {
+class NativeHolder : public std::shared_ptr<T> {
 public:
 	typedef typename NativeDestructor<T>::DeleterFptr DeleterFptr;
-	NativeHolder() : std::tr1::shared_ptr<T>() {
+	NativeHolder() : std::shared_ptr<T>() {
 	}
 
 	NativeHolder(T *t, DeleterFptr p, const char * name = "unnammed") 
-		: std::tr1::shared_ptr<T>(t, NativeDestructor<T>(p, name)) {
+		: std::shared_ptr<T>(t, NativeDestructor<T>(p, name)) {
 	}
 
 };
 
 #define SPECIALIZE_FOR(rt_object, deleter ) \
 	template <> \
-	class NativeHolder<rt_object> : public std::tr1::shared_ptr<rt_object> { \
+	class NativeHolder<rt_object> : public std::shared_ptr<rt_object> { \
 	public : \
-		NativeHolder() : std::tr1::shared_ptr<rt_object>(){} \
+		NativeHolder() : std::shared_ptr<rt_object>(){} \
 		NativeHolder(rt_object * t) \
-			: std::tr1::shared_ptr<rt_object>(t,NativeDestructor<rt_object>( deleter, #rt_object)) {}\
+			: std::shared_ptr<rt_object>(t,NativeDestructor<rt_object>( deleter, #rt_object)) {}\
 	}
 
 SPECIALIZE_FOR(RT_TASK, rt_task_delete);

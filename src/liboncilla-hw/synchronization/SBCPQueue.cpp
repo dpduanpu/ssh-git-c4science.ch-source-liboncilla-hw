@@ -162,7 +162,7 @@ void SBCPQueue::InitializeIO() {
 		}
 
 		log( debug,  "Appending scheduled device " , LegPrefix(mdv->first) );
-		w.AppendScheduledDevice(std::tr1::static_pointer_cast<sbcp::Device>(mdv->second));
+		w.AppendScheduledDevice(std::static_pointer_cast<sbcp::Device>(mdv->second));
 	}
 
 	log( debug, "SBCP Scheduled Workflow enabled and configured.");
@@ -330,7 +330,7 @@ void SBCPQueue::SetMotorParameters(const BrushlessParameterGroup & paramGroup,
                                    sbcp::amarsi::MotorDriver::Motor & motor) {
 	log(debug, "SBCPQueue::SetMotorParameters()" );
 	//due to a bad design of biorob-cpp dynamic section we should do this
-	std::tr1::shared_ptr<BrushlessParameterSection> params =
+	std::shared_ptr<BrushlessParameterSection> params =
 		const_cast<BrushlessParameterGroup &>(paramGroup).SubSection(paramName);
 	
 	if (!params) {
