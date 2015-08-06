@@ -14,6 +14,11 @@ BIOROB_CPP_EXPORT_PLUGIN(OncillaBackend, HWOncillaBackend);
 namespace ro = rci::oncilla;
 namespace loh = liboncilla::hw;
 
+const double HWOncillaBackend::ENCODER_RATIO_L1 = 25.0/12.0; /// \todo CHECK
+const double HWOncillaBackend::ENCODER_RATIO_L2 = 1.0; /// \todo CHECK
+const double HWOncillaBackend::ENCODER_RATIO_L3 = 1.0; /// \todo CHECK
+
+
 const char * HWOncillaBackend::L1_POSITION_SUFFIX = "_L1";
 const char * HWOncillaBackend::L2_POSITION_SUFFIX = "_L2";
 

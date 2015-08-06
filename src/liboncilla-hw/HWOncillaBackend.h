@@ -44,9 +44,9 @@ private:
 	static const unsigned int HW_RANGE_L2_FORE = 1850; /// \todo CHECK
 	static const unsigned int HW_RANGE_L2_HIND = 2200; /// \todo CHECK
 
-	static const double ENCODER_RATIO_L1 = 25.0 / 12.0; /// \todo CHECK
-	static const double ENCODER_RATIO_L2 = 1.0; /// \todo CHECK
-	static const double ENCODER_RATIO_L3 = 1.0; /// \todo CHECK
+	static const double ENCODER_RATIO_L1;
+	static const double ENCODER_RATIO_L2;
+	static const double ENCODER_RATIO_L3;
 
 	static const std::string & LegPrefix(rci::oncilla::Leg l);
 	static const char * L1_POSITION_SUFFIX;
