@@ -9,7 +9,7 @@
 #include "liboncilla-hw/nodes/Nodes.h"
 
 //export the plugin
-BIOROB_CPP_EXPORT_PLUGIN(OncillaBackend, HWOncillaBackend);
+BCPP_EXPORT_PLUGIN(OncillaBackend, HWOncillaBackend);
 
 namespace ro = rci::oncilla;
 namespace loh = liboncilla::hw;
@@ -44,12 +44,12 @@ void HWOncillaBackend::LockMemory() {
 HWOncillaBackend::~HWOncillaBackend() {
 }
 
-boost::shared_ptr<rci::oncilla::Synchronizer> 
+boost::shared_ptr<rci::oncilla::Synchronizer>
 HWOncillaBackend::CreateSynchronizer() {
 	return boost::static_pointer_cast<ro::Synchronizer, loh::Synchronizer>(d_synchronizer);
 }
 
-boost::shared_ptr<rci::oncilla::L0> 
+boost::shared_ptr<rci::oncilla::L0>
 HWOncillaBackend::CreateL0(rci::oncilla::Leg leg,
                            const std::string& name) {
 
@@ -62,13 +62,13 @@ HWOncillaBackend::CreateL0(rci::oncilla::Leg leg,
 	return boost::static_pointer_cast<ro::L0, loh::L0>(node);
 }
 
-boost::shared_ptr<rci::oncilla::L1L2> 
-HWOncillaBackend::CreateL1(rci::oncilla::Leg leg, 
+boost::shared_ptr<rci::oncilla::L1L2>
+HWOncillaBackend::CreateL1(rci::oncilla::Leg leg,
                            const std::string& name) {
 
 	loh::L1L2::Ptr node(new loh::L1L2(*d_synchronizer, name));
 
-	loh::Synchronizer::RegistrationAccessor::RegisterL1(*d_synchronizer, 
+	loh::Synchronizer::RegistrationAccessor::RegisterL1(*d_synchronizer,
 	                                                    leg,
 	                                                    node);
 
